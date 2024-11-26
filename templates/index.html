@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parkinson's Drawing Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.3.0/FileSaver.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #45a049;
+            --background-color: #f5f7fa;
+            --text-color: #2c3e50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        header {
+            background-color: var(--primary-color);
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            color: white;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            min-height: 80vh;
+        }
+
+        .start-container {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .start-text {
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        a {
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            color: white;
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            margin: 0.5rem;
+            text-decoration: none;
+        }
+
+        a:hover {
+            background-color: #357abd;
+            transform: translateY(-5px);
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Parkinson's Test</h1>
+    </header>
+
+    <main>
+        <div class="start-container">
+            <p class="start-text">
+                Welcome to the Parkinson's Test. Please click below to start the test.
+            </p>
+            <a href="/drawnSP">Start Test</a>
+        </div>
+    </main>
+</body>
+</html>
