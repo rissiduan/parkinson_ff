@@ -30,45 +30,38 @@ def result_page():
 def cal_Sp():
     def extract_hog_features_from_image(image):
         img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2GRAY)
-        img = cv2.resize(img, (128, 128))  # Resize image
+        img = cv2.resize(img, (128, 128))
         hog_features = hog(img, orientations=9, pixels_per_cell=(8, 8), cells_per_block=(2, 2), block_norm='L2-Hys')
         return hog_features
 
     try:
-        # Receive the JSON data from the request
-        data = request.get_json()  # Use get_json() for JSON request body
+        data = request.get_json()
         if not data or 'image' not in data:
             raise ValueError("No image data found in the request")
         
-        image_data = data['image'].split(',')[1]  # Remove the prefix part of the Base64 string
-        image_data = base64.b64decode(image_data)  # Decode Base64 data
+        image_data = data['image'].split(',')[1]
+        image_data = base64.b64decode(image_data)
         image = Image.open(BytesIO(image_data))
 
-        # Load the model using pickle
-        model_path = 'model\svm_spiral_model_ff.pkl'
-        try:
-            with open(model_path, 'rb') as file:
-                loaded_model = pickle.load(file)
-        except Exception as e:
-            raise ValueError(f"Error loading the model: {str(e)}")
+        model_path = 'model\svm_spiral_model_ff4.pkl'
+        with open(model_path, 'rb') as file:
+            loaded_model = pickle.load(file)
 
-        # Extract features from the image
         hog_features = extract_hog_features_from_image(image)
         hog_features = np.array(hog_features).reshape(1, -1)
 
-        # Predict the result
         prediction = loaded_model.predict(hog_features)
-        result = "Healthy" if prediction[0] == 1 else "Parkinson"
+        confidence = max(loaded_model.predict_proba(hog_features)[0])
 
-        # Save the result in session
-        session['sp_result'] = result
-        print("1. "+result)
-        # Redirect to results page
+        result = "Healthy" if prediction[0] == 1 else "Parkinson"
+        session['sp_result'] = (result, confidence)
+        print(f"1. {result} (Confidence: {confidence})")
         return redirect(url_for('get_results'))
 
     except Exception as e:
         print(f"Error: {str(e)}")
         return jsonify({'error': str(e)})
+
 
 @app.route('/Wave', methods=['POST'])
 def cal_Wave():
@@ -79,44 +72,72 @@ def cal_Wave():
         return hog_features
 
     try:
-        # Receive image data from the request
         data = request.form['image']
-        data = data.split(',')[1]  # Remove unwanted part
+        data = data.split(',')[1]
         image_data = base64.b64decode(data)
         image = Image.open(BytesIO(image_data))
 
-        # Load the model using pickle
-        model_path = 'model\svm_WAVE_model.pkl'
+        model_path = 'model\svm_WAVE_model2.pkl'
         with open(model_path, 'rb') as file:
             loaded_model = pickle.load(file)
 
-        # Extract features from the image
         hog_features = extract_hog_features_from_image(image)
         hog_features = np.array(hog_features).reshape(1, -1)
 
-        # Predict the result
         prediction = loaded_model.predict(hog_features)
-        result = "Healthy" if prediction[0] == 0 else "Parkinson"
+        confidence = max(loaded_model.predict_proba(hog_features)[0])
 
-        # Save the result in session
-        session['wave_result'] = result
-        print("2. "+result)
-        # Redirect to results page
+        result = "Healthy" if prediction[0] == 0 else "Parkinson"
+        session['wave_result'] = (result, confidence)
+        print(f"2. {result} (Confidence: {confidence})")
         return redirect(url_for('get_results'))
 
     except Exception as e:
         return jsonify({'error': str(e)})
 
+
 @app.route('/results', methods=['GET'])
 def get_results():
-    # Retrieve results from session
-    sp_result = session.get('sp_result', 'No result')
-    wave_result = session.get('wave_result', 'No result')
-    print(f"3. {sp_result}")
-    print(f"4. {wave_result}")
+    sp_result, sp_confidence = session.get('sp_result', ('No result', 0))
+    wave_result, wave_confidence = session.get('wave_result', ('No result', 0))
 
-    # Display results
-    return render_template('result.html', sp_result=sp_result, wave_result=wave_result)
+    # ปรับค่าน้ำหนักตามความแม่นยำของโมเดล
+    weight_sp = 0.48  # น้ำหนักสำหรับโมเดล SP (accuracy 0.9248)
+    weight_wave = 0.52  # น้ำหนักสำหรับโมเดล Wave (accuracy 0.9429)
+    
+    confidence_threshold = 0.6  # กำหนด threshold ความมั่นใจขั้นต่ำ
+
+    if sp_confidence == 0 and wave_confidence == 0:
+        final_result = "No result available"
+    else:
+        # หากมีความมั่นใจต่ำกว่า threshold ให้ใช้โมเดลที่มั่นใจสูงสุด
+        if sp_confidence >= confidence_threshold and wave_confidence >= confidence_threshold:
+            # การคำนวณคะแนนแบบถ่วงน้ำหนัก
+            weighted_score = (weight_sp * sp_confidence) + (weight_wave * wave_confidence)
+
+            if sp_result == "Parkinson" and wave_result == "Parkinson":
+                final_result = "Parkinson"
+            elif sp_result == "Healthy" and wave_result == "Healthy":
+                final_result = "Healthy"
+            else:
+                # ถ้าผลลัพธ์ไม่ตรงกัน ใช้คะแนนแบบถ่วงน้ำหนักเพื่อตัดสิน
+                final_result = "Parkinson" if weighted_score > 0.5 else "Healthy"
+        else:
+            # ใช้โมเดลที่มีความมั่นใจสูงสุดในการตัดสินใจ
+            if sp_confidence > wave_confidence:
+                final_result = "Healthy" if sp_result == "Healthy" else "Parkinson"
+            else:
+                final_result = "Healthy" if wave_result == "Healthy" else "Parkinson"
+
+    print(f"3. {sp_result} (Confidence: {sp_confidence})")
+    print(f"4. {wave_result} (Confidence: {wave_confidence})")
+    print(f"Final Result: {final_result}")
+
+    return render_template('result.html', final_result=final_result)
+
+
+
+
 
 
 if __name__ == "__main__":
