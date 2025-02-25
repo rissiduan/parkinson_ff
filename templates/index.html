@@ -157,6 +157,34 @@
             color: var(--primary-color);
         }
 
+        /* Table wrapper for scrolling */
+        .table-wrapper {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+        }
+
+        /* Scrollbar styling */
+        .table-wrapper::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #3a7bc0;
+        }
+
         /* Styling the table */
         table {
             width: 100%;
@@ -178,6 +206,9 @@
             color: var(--primary-color);
             font-weight: 600;
             border-bottom: 2px solid var(--primary-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         tr {
@@ -304,18 +335,20 @@
             <!-- Table container with title -->
             <div class="table-container">
                 <h2 class="table-title">Previous Test Results</h2>
-                <table id="resultTable">
-                    <thead>
-                        <tr>
-                            <th>Result</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Data rows will be inserted here -->
-                    </tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table id="resultTable">
+                        <thead>
+                            <tr>
+                                <th>Result</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
 
                 <!-- Clear LocalStorage button -->
                 <button class="clear-button" onclick="clearLocalStorage()">Clear All Data</button>
@@ -427,6 +460,17 @@
                         });
                     }, 100 + (index * 50));
                 });
+                
+                // If more than 5 rows, add subtle glow animation to the table wrapper to indicate scrollability
+                if (results.length > 5) {
+                    const tableWrapper = document.querySelector('.table-wrapper');
+                    gsap.to(tableWrapper, {
+                        boxShadow: "0 0 15px rgba(74, 144, 226, 0.2), inset 0 0 10px rgba(0,0,0,0.05)",
+                        repeat: 2,
+                        yoyo: true,
+                        duration: 0.8
+                    });
+                }
             }
         }
 

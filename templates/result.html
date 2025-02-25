@@ -237,7 +237,7 @@
             box-shadow: 0 3px 10px rgba(74, 144, 226, 0.3);
         }
 
-        /* Particles animation */
+        /* Particles animation - ปรับปรุงแล้ว */
         .particles {
             position: fixed;
             top: 0;
@@ -251,28 +251,28 @@
         .particle {
             position: absolute;
             border-radius: 50%;
-            opacity: 0.6;
-            filter: blur(1px);
-            animation: float 20s infinite ease-in-out;
+            opacity: 1;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            transform-origin: center center;
+            animation: float 30s infinite ease-in-out;
         }
 
+        /* ปรับแต่งอนิเมชั่นให้ลอยได้อย่างอิสระ */
         @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0) translateX(0) rotate(0deg);
+            0% {
+                transform: translateY(0) translateX(0) scale(1);
             }
-
             25% {
-                transform: translateY(-50px) translateX(25px) rotate(90deg);
+                transform: translateY(-70px) translateX(40px) scale(1.1);
             }
-
             50% {
-                transform: translateY(-25px) translateX(-25px) rotate(180deg);
+                transform: translateY(-30px) translateX(-50px) scale(0.9);
             }
-
             75% {
-                transform: translateY(50px) translateX(25px) rotate(270deg);
+                transform: translateY(70px) translateX(30px) scale(1.05);
+            }
+            100% {
+                transform: translateY(0) translateX(0) scale(1);
             }
         }
 
@@ -608,44 +608,69 @@
             }, 300);
         }
         
-        // Particle generator
+        // ฟังก์ชัน Particle generator ที่ปรับปรุงแล้ว
         function createParticles() {
             const particlesContainer = document.querySelector('.particles');
-            const numParticles = 30;
+            particlesContainer.innerHTML = ''; // เคลียร์ particles เดิม
+            
+            const numParticles = 60; // เพิ่มจำนวน particles
+            
+            // สีตามธีม
             const colors = [
-                'rgba(74, 144, 226, 0.3)', // primary
-                'rgba(69, 160, 73, 0.2)', // secondary
-                'rgba(155, 89, 182, 0.2)', // accent
+                'rgba(74, 144, 226, 0.3)', // primary-color
+                'rgba(69, 160, 73, 0.25)', // secondary-color
+                'rgba(155, 89, 182, 0.2)', // accent-color
+                'rgba(231, 76, 60, 0.15)', // danger-color
+                'rgba(74, 144, 226, 0.15)', // primary-color lighter
+                'rgba(155, 89, 182, 0.1)' // accent-color lighter
             ];
 
             for (let i = 0; i < numParticles; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
 
-                // Randomize size
-                const size = Math.random() * 15 + 5;
+                // ปรับขนาดให้หลากหลาย
+                const size = Math.random() * 35 + 10; // ขนาดใหญ่ขึ้น
                 particle.style.width = `${size}px`;
                 particle.style.height = `${size}px`;
 
-                // Randomize color
+                // สีแบบสุ่มจากธีม
                 particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
 
-                // Randomize position
+                // ตำแหน่งแบบสุ่ม
                 particle.style.left = `${Math.random() * 100}%`;
                 particle.style.top = `${Math.random() * 100}%`;
 
-                // Randomize animation duration and delay
-                const duration = Math.random() * 10 + 15;
-                const delay = Math.random() * 5;
-                particle.style.animationDuration = `${duration}s`;
-                particle.style.animationDelay = `${delay}s`;
+                // อนิเมชั่นที่หลากหลาย
+                const duration = Math.random() * 30 + 25; // ทำให้ช้าลงเพื่อความนุ่มนวล
+                const delay = Math.random() * 15;
+                
+                // สร้างเส้นทางเคลื่อนที่ที่ซับซ้อนขึ้น
+                if (i % 3 === 0) {
+                    particle.style.animation = `float ${duration}s infinite ease-in-out alternate-reverse`;
+                } else if (i % 3 === 1) {
+                    particle.style.animation = `float ${duration + 5}s infinite ease-in-out reverse`;
+                } else {
+                    particle.style.animation = `float ${duration - 5}s infinite ease-in-out`;
+                }
+                
+                particle.style.animationDelay = `-${delay}s`; // ใช้ negative delay เพื่อให้เริ่มต้นที่จุดต่างกัน
+
 
                 particlesContainer.appendChild(particle);
             }
         }
 
-        // Initialize particles
-        createParticles();
+        // เรียกใช้ฟังก์ชัน createParticles เมื่อโหลดหน้าเว็บ
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            
+            // อัปเดตประวัติการทดสอบ
+            updateHistoryList();
+        });
+
+        // รีเฟรช particles ทุก 1 นาที เพื่อเพิ่มความเคลื่อนไหวใหม่
+        setInterval(createParticles, 60000);
 
         // Save result function
         function saveResult() {
@@ -678,7 +703,7 @@
         // Update history function
         function updateHistoryList() {
             const historyList = document.getElementById('historyList');
-            const history = Object.values(localStorage).map(item => JSON.parse(item));
+            const history = Object.entries(localStorage).map(([_, value]) => JSON.parse(value));
 
             if (history.length === 0) {
                 historyList.innerHTML = '<div class="history-item">ไม่มีประวัติการทดสอบ</div>';
@@ -733,8 +758,5 @@
             }, 2000);
         };
     </script>
-
-
 </body>
-
 </html>
