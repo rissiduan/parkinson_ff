@@ -5,12 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parkinson's Drawing Test</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.3.0/FileSaver.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
     <style>
         :root {
             --primary-color: #4a90e2;
             --secondary-color: #45a049;
             --background-color: #f5f7fa;
             --text-color: #2c3e50;
+            --accent-color: #9b59b6;
+            --danger-color: #e74c3c;
+            --card-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
         }
 
         * {
@@ -23,73 +28,566 @@
         body {
             background-color: var(--background-color);
             color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        .page-wrapper {
+            opacity: 0;
+            transform: translateY(20px);
         }
 
         header {
-            background-color: var(--primary-color);
-            padding: 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+            pointer-events: none;
         }
 
         header h1 {
             color: white;
             text-align: center;
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(-20px);
         }
 
         main {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 2rem;
+            padding: 3rem 2rem;
             min-height: 80vh;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .start-container {
             text-align: center;
             margin: 2rem 0;
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            width: 100%;
+            max-width: 700px;
+            opacity: 0;
+            transform: scale(0.9);
         }
 
         .start-text {
-            margin-bottom: 1.5rem;
-            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            font-size: 1.25rem;
             max-width: 600px;
-            line-height: 1.6;
+            line-height: 1.7;
+            color: #555;
         }
 
-        a {
-            padding: 12px 24px;
+        .start-btn {
+            display: inline-block;
+            padding: 14px 30px;
             font-size: 1.1rem;
             color: white;
-            background-color: var(--primary-color);
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
             border: none;
-            border-radius: 8px;
+            border-radius: 50px;
             cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s;
+            transition: all 0.3s ease;
             margin: 0.5rem;
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(74, 144, 226, 0.3);
+            opacity: 0;
+            transform: translateY(20px);
         }
 
-        a:hover {
-            background-color: #357abd;
+        .start-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(74, 144, 226, 0.4);
+        }
+
+        .start-btn:hover::before {
+            transform: translateX(100%);
+        }
+
+        /* Styling the table container */
+        .table-container {
+            width: 100%;
+            max-width: 900px;
+            margin-top: 3rem;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .table-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        /* Styling the table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        table, th, td {
+            border: none;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: center;
+        }
+
+        th {
+            background-color: rgba(74, 144, 226, 0.1);
+            color: var(--primary-color);
+            font-weight: 600;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        tr {
+            transition: background-color 0.3s ease;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(245, 247, 250, 0.5);
+        }
+
+        tr:hover {
+            background-color: rgba(74, 144, 226, 0.05);
+        }
+
+        /* Styling for the clear button */
+        .clear-button {
+            margin-top: 2rem;
+            padding: 12px 30px;
+            font-size: 16px;
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .clear-button:hover {
             transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(231, 76, 60, 0.4);
         }
-
+        
+        /* No data message styling */
+        .no-data {
+            color: #888;
+            font-style: italic;
+        }
+        
+        /* Particles animation */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+            }
+            25% {
+                transform: translateY(-30px) translateX(15px);
+            }
+            50% {
+                transform: translateY(-15px) translateX(-15px);
+            }
+            75% {
+                transform: translateY(30px) translateX(15px);
+            }
+        }
+        
+        /* Loading spinner */
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(74, 144, 226, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s infinite linear;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            margin-top: -25px;
+            margin-left: -25px;
+            z-index: 1000;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Pulse animation for important elements */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(74, 144, 226, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(74, 144, 226, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(74, 144, 226, 0); }
+        }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Parkinson's Test</h1>
-    </header>
+    <!-- Loading spinner -->
+    <div class="loading-spinner" id="loading-spinner"></div>
+    
+    <!-- Particles background -->
+    <div class="particles" id="particles"></div>
+    
+    <div class="page-wrapper">
+        <header>
+            <h1 class="animate__animated">Parkinson's Test</h1>
+        </header>
 
-    <main>
-        <div class="start-container">
-            <p class="start-text">
-                Welcome to the Parkinson's Test. Please click below to start the test.
-            </p>
-            <a href="/drawnSP">Start Test</a>
-        </div>
-    </main>
+        <main>
+            <div class="start-container">
+                <p class="start-text">
+                    Welcome to the Parkinson's Test. This simple drawing test can help detect early signs of Parkinson's disease. Please click below to start the assessment.
+                </p>
+                <a href="/drawnSP" class="start-btn">Start Test</a>
+            </div>
+
+            <!-- Table container with title -->
+            <div class="table-container">
+                <h2 class="table-title">Previous Test Results</h2>
+                <table id="resultTable">
+                    <thead>
+                        <tr>
+                            <th>Result</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data rows will be inserted here -->
+                    </tbody>
+                </table>
+
+                <!-- Clear LocalStorage button -->
+                <button class="clear-button" onclick="clearLocalStorage()">Clear All Data</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Create animated particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const colors = ['#4a90e2', '#45a049', '#9b59b6', '#3498db', '#e74c3c'];
+            
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random properties
+                const size = Math.random() * 20 + 5;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Position
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                
+                // Style
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.background = color;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                
+                // Animation delay
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Function to display data from localStorage in the table
+        function displayResults() {
+            const tableBody = document.querySelector('#resultTable tbody');
+            tableBody.innerHTML = ''; // Clear the table body before inserting new rows
+
+            // Check if there is any data in localStorage
+            if (localStorage.length === 0) {
+                // If no data, display a message in the table
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="3" class="no-data">No test results found</td>`; // Show message in all columns
+                tableBody.appendChild(row);
+            } else {
+                // Create an array to hold all localStorage items related to test results
+                const results = [];
+                
+                // Extract all relevant items from localStorage
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    try {
+                        const storedData = localStorage.getItem(key);
+                        const parsedData = JSON.parse(storedData);
+                        
+                        // Check if this is a valid test result with required fields
+                        if (parsedData && parsedData.result && parsedData.date) {
+                            results.push(parsedData);
+                        }
+                    } catch (e) {
+                        // Skip invalid JSON entries
+                        console.log("Skipping invalid entry in localStorage");
+                    }
+                }
+                
+                // Sort results by date (newest first)
+                results.sort((a, b) => {
+                    return new Date(b.date) - new Date(a.date);
+                });
+                
+                // Populate the table with sorted results
+                results.forEach((result, index) => {
+                    const row = document.createElement('tr');
+                    
+                    // Split date and time if possible
+                    let dateStr = result.date;
+                    let timeStr = "";
+                    
+                    if (result.date.includes(',')) {
+                        dateStr = result.date.split(',')[0];
+                        timeStr = result.date.split(',')[1];
+                    }
+                    
+                    row.innerHTML = `
+                        <td>${result.result}</td>
+                        <td>${dateStr}</td>
+                        <td>${timeStr}</td>
+                    `;
+                    
+                    // Add animation delay for each row
+                    row.style.opacity = "0";
+                    row.style.transform = "translateX(-20px)";
+                    
+                    tableBody.appendChild(row);
+                    
+                    // Animate rows with staggered timing
+                    setTimeout(() => {
+                        gsap.to(row, {
+                            opacity: 1,
+                            x: 0,
+                            duration: 0.4,
+                            ease: "power1.out"
+                        });
+                    }, 100 + (index * 50));
+                });
+            }
+        }
+
+        // Function to clear localStorage and update the table
+        function clearLocalStorage() {
+            // Add confirmation with animation
+            const clearButton = document.querySelector('.clear-button');
+            clearButton.classList.add('animate__animated', 'animate__headShake');
+            
+            if (confirm("Are you sure you want to delete all test results?")) {
+                // Animation for clearing data
+                const tableRows = document.querySelectorAll('#resultTable tbody tr');
+                
+                tableRows.forEach((row, index) => {
+                    setTimeout(() => {
+                        gsap.to(row, {
+                            opacity: 0,
+                            x: 20,
+                            duration: 0.3,
+                            ease: "power1.in"
+                        });
+                    }, index * 50);
+                });
+                
+                // Wait for animation to complete before clearing localStorage
+                setTimeout(() => {
+                    // Clear all items from localStorage
+                    localStorage.clear();
+                    
+                    // Show success message
+                    const tableBody = document.querySelector('#resultTable tbody');
+                    tableBody.innerHTML = '';
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="3" class="no-data">All data cleared successfully</td>`;
+                    tableBody.appendChild(row);
+                    
+                    gsap.from(row, {
+                        opacity: 0,
+                        y: -10,
+                        duration: 0.5
+                    });
+                    
+                    // Remove animation class from button
+                    clearButton.classList.remove('animate__animated', 'animate__headShake');
+                }, tableRows.length * 50 + 300);
+            } else {
+                // Remove animation class if cancelled
+                setTimeout(() => {
+                    clearButton.classList.remove('animate__animated', 'animate__headShake');
+                }, 1000);
+            }
+        }
+
+        // Page load animations
+        window.onload = function() {
+            // Hide loading spinner
+            setTimeout(() => {
+                document.getElementById('loading-spinner').style.display = 'none';
+                
+                // Fade in page content
+                gsap.to('.page-wrapper', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    ease: "power2.out"
+                });
+                
+                // Animate header
+                gsap.to('header h1', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    delay: 0.2,
+                    ease: "back.out(1.7)"
+                });
+                
+                // Animate start container
+                gsap.to('.start-container', {
+                    opacity: 1,
+                    scale: 1,
+                    duration: 0.8,
+                    delay: 0.4,
+                    ease: "back.out(1.2)"
+                });
+                
+                // Animate start button
+                gsap.to('.start-btn', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.5,
+                    delay: 0.7,
+                    ease: "power1.out"
+                });
+                
+                // Animate table container
+                gsap.to('.table-container', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    delay: 0.6,
+                    ease: "power2.out"
+                });
+                
+                // Animate clear button
+                gsap.to('.clear-button', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.5,
+                    delay: 0.9,
+                    ease: "power1.out"
+                });
+                
+                // Create floating particles
+                createParticles();
+                
+                // Display results after animations
+                setTimeout(displayResults, 800);
+            }, 1000); // Simulate loading for better effect
+        };
+        
+        // Mousemove parallax effect for particles
+        document.addEventListener('mousemove', (e) => {
+            const particles = document.querySelectorAll('.particle');
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+            
+            particles.forEach(particle => {
+                const speed = parseFloat(particle.style.width) * 0.05;
+                const offsetX = (mouseX - 0.5) * speed;
+                const offsetY = (mouseY - 0.5) * speed;
+                
+                gsap.to(particle, {
+                    x: offsetX,
+                    y: offsetY,
+                    duration: 2,
+                    ease: "power1.out"
+                });
+            });
+        });
+        
+        // Button hover animation
+        document.addEventListener('DOMContentLoaded', () => {
+            const startBtn = document.querySelector('.start-btn');
+            
+            startBtn.addEventListener('mouseenter', () => {
+                gsap.to(startBtn, {
+                    scale: 1.05,
+                    duration: 0.3,
+                    ease: "power1.out"
+                });
+            });
+            
+            startBtn.addEventListener('mouseleave', () => {
+                gsap.to(startBtn, {
+                    scale: 1,
+                    duration: 0.3,
+                    ease: "power1.out"
+                });
+            });
+        });
+    </script>
 </body>
 </html>

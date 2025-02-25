@@ -1,64 +1,740 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prediction Result</title>
     <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #45a049;
+            --background-color: #f5f7fa;
+            --text-color: #2c3e50;
+            --accent-color: #9b59b6;
+            --danger-color: #e74c3c;
+            --card-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap');
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Prompt', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
-            padding: 50px;
+            padding: 50px 20px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            opacity: 0;
+            animation: fadeIn 1s ease forwards;
+            position: relative;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--background-color) 0%, #e0e6f0 100%);
         }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
         .container {
-            max-width: 600px;
+            max-width: 650px;
             margin: auto;
-            padding: 20px;
-            border: 2px solid #ccc;
-            border-radius: 10px;
-            background-color: #f9f9f9;
+            padding: 35px;
+            border-radius: 20px;
+            background-color: white;
+            box-shadow: var(--card-shadow);
+            transform: translateY(30px);
+            opacity: 0;
+            animation: slideUp 0.8s ease 0.3s forwards;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
         }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+
+        @keyframes slideUp {
+            0% {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         h1 {
-            color: #333;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-size: 2.4rem;
+            position: relative;
+            display: inline-block;
+            font-weight: 600;
         }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            bottom: -8px;
+            left: 50%;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            transform: translateX(-50%);
+            animation: lineExpand 1s ease 1s forwards;
+            border-radius: 3px;
+        }
+
+        @keyframes lineExpand {
+            0% {
+                width: 0;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+
+        .result-container {
+            background-color: rgba(74, 144, 226, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 35px 0;
+            border-left: 6px solid var(--primary-color);
+            opacity: 0;
+            animation: fadeIn 0.5s ease 1.2s forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle at top right, rgba(74, 144, 226, 0.15), transparent 70%);
+            border-radius: 0 0 0 100%;
+        }
+
         .result {
-            font-size: 24px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin: 20px 0;
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-color);
+            opacity: 0;
+            animation: pulse 0.6s ease 1.5s forwards;
+            position: relative;
+            display: inline-block;
         }
+
+        .result::before {
+            content: '"';
+            color: var(--primary-color);
+            font-size: 1.2em;
+            position: relative;
+            top: 5px;
+        }
+
+        .result::after {
+            content: '"';
+            color: var(--primary-color);
+            font-size: 1.2em;
+            position: relative;
+            top: 5px;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            70% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
         .button-container {
-            margin-top: 20px;
+            margin-top: 35px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease 1.8s forwards;
         }
+
         .test-again-button {
-            padding: 10px 20px;
+            padding: 14px 28px;
             font-size: 16px;
-            background-color: #3498db;
+            font-weight: 500;
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+            transform: translateY(0);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
         }
+
+        .test-again-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s ease;
+            z-index: -1;
+        }
+
         .test-again-button:hover {
-            background-color: #2980b9;
+            background-color: #3a80d2;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(74, 144, 226, 0.4);
+        }
+
+        .test-again-button:hover::before {
+            left: 100%;
+        }
+
+        .test-again-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(74, 144, 226, 0.3);
+        }
+
+        /* Particles animation */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.6;
+            filter: blur(1px);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+            }
+
+            25% {
+                transform: translateY(-50px) translateX(25px) rotate(90deg);
+            }
+
+            50% {
+                transform: translateY(-25px) translateX(-25px) rotate(180deg);
+            }
+
+            75% {
+                transform: translateY(50px) translateX(25px) rotate(270deg);
+            }
+        }
+
+        .history-section {
+            margin-top: 45px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease 2s forwards;
+            position: relative;
+        }
+
+        .history-title {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 500;
+            position: relative;
+            display: inline-block;
+        }
+
+        .history-title::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 2px;
+            bottom: -5px;
+            left: 50%;
+            background-color: var(--accent-color);
+            transform: translateX(-50%);
+        }
+
+        .history-list {
+            max-height: 250px;
+            overflow-y: auto;
+            background-color: white;
+            border-radius: 12px;
+            padding: 5px;
+            box-shadow: var(--card-shadow);
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) transparent;
+        }
+
+        .history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eef2f7;
+            text-align: left;
+            border-radius: 8px;
+            margin: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .history-item:hover {
+            background-color: rgba(74, 144, 226, 0.05);
+            transform: translateX(3px);
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-date {
+            color: #7f8c9a;
+            font-size: 0.9em;
+        }
+
+        .history-result {
+            font-weight: 500;
+            max-width: 60%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--background-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(74, 144, 226, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary-color);
+            border-right: 4px solid var(--accent-color);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: top 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            font-weight: 500;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+        }
+
+        .notification.show {
+            top: 20px;
+        }
+
+        .notification::before {
+            content: '✓';
+            display: inline-block;
+            margin-right: 10px;
+            font-weight: bold;
+            background-color: rgba(255, 255, 255, 0.3);
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 25px;
+        }
+
+        /* Glowing effect */
+        .glow {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--primary-color) 0%, transparent 70%);
+            opacity: 0.1;
+            filter: blur(20px);
+            animation: moveGlow 15s infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes moveGlow {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(calc(100vw - 200px), calc(100vh - 200px));
+            }
+        }
+
+        /* Confetti effect for success */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            display: none;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(calc(100vh + 100px)) rotate(720deg);
+                opacity: 0;
+            }
         }
     </style>
 </head>
+
 <body>
+    <div class="particles">
+        <!-- Particles will be created here by JavaScript -->
+    </div>
+
+    <div class="glow"></div>
+    <div class="glow" style="left: 70%; top: 20%; animation-delay: -5s;"></div>
+
+    <div class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="confetti-container" id="confettiContainer">
+        <!-- Confetti will be generated by JavaScript -->
+    </div>
+
     <div class="container">
         <h1>ผลการวิเคราะห์</h1>
-
-        <div class="result">{{ final_result }}</div>
-
+        <div class="result-container">
+            <div class="result" id="result">{{ final_result }}</div>
+        </div>
         <div class="button-container">
-            <button class="test-again-button" onclick="handleTestAgain()">ทดสอบอีกครั้ง</button>
+            <button class="test-again-button" onclick="handleTestAgain()">กลับสู่หน้าหลัก</button>
+        </div>
+
+        <div class="history-section">
+            <h3 class="history-title">ประวัติการทดสอบ</h3>
+            <div class="history-list" id="historyList">
+                <!-- History items will be inserted here -->
+            </div>
         </div>
     </div>
 
+    <div class="notification" id="notification">บันทึกข้อมูลเรียบร้อยแล้ว</div>
+
     <script>
-        function handleTestAgain() {
-            window.location.href = '/';
+        // Show loading animation
+        window.addEventListener('load', function () {
+            setTimeout(function () {
+                document.querySelector('.loading-overlay').style.opacity = '0';
+                setTimeout(function () {
+                    document.querySelector('.loading-overlay').style.display = 'none';
+
+                    // Trigger confetti on first load
+                    createConfetti();
+                }, 500);
+            }, 1000);
+        });
+
+        // Create confetti effect
+        function createConfetti() {
+            const confettiContainer = document.getElementById('confettiContainer');
+            confettiContainer.style.display = 'block';
+            confettiContainer.innerHTML = '';
+
+            const colors = [
+                '#4a90e2', // primary
+                '#45a049', // secondary
+                '#9b59b6', // accent
+                '#3498db',
+                '#f1c40f'
+            ];
+
+            const confettiCount = 100;
+
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+
+                // Random shape (square, circle, triangle)
+                const shapeType = Math.floor(Math.random() * 3);
+                if (shapeType === 0) {
+                    confetti.style.borderRadius = '50%'; // circle
+                } else if (shapeType === 1) {
+                    confetti.style.borderRadius = '0'; // square
+                } else {
+                    confetti.style.width = '0';
+                    confetti.style.height = '0';
+                    confetti.style.borderLeft = '5px solid transparent';
+                    confetti.style.borderRight = '5px solid transparent';
+                    confetti.style.borderBottom = '10px solid ' + colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.background = 'transparent';
+                }
+
+                // Random color
+                if (shapeType !== 2) {
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                }
+
+                // Random position
+                const xPos = Math.random() * 100;
+                confetti.style.left = `${xPos}%`;
+
+                // Random size
+                const size = Math.random() * 10 + 5;
+                if (shapeType !== 2) {
+                    confetti.style.width = `${size}px`;
+                    confetti.style.height = `${size}px`;
+                }
+
+                // Animation with random duration and delay
+                const duration = Math.random() * 3 + 2;
+                const delay = Math.random() * 2;
+                confetti.style.animation = `confettiFall ${duration}s ease ${delay}s forwards`;
+
+                confettiContainer.appendChild(confetti);
+            }
+
+            // Remove confetti after animation completes
+            setTimeout(() => {
+                confettiContainer.style.display = 'none';
+            }, 5000);
         }
+
+        function handleTestAgain() {
+            // Add animation before redirecting
+            document.querySelector('.container').style.transform = 'translateY(30px)';
+            document.querySelector('.container').style.opacity = '0';
+            
+            setTimeout(function() {
+                window.location.href = '/';
+            }, 300);
+        }
+        
+        // Particle generator
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            const numParticles = 30;
+            const colors = [
+                'rgba(74, 144, 226, 0.3)', // primary
+                'rgba(69, 160, 73, 0.2)', // secondary
+                'rgba(155, 89, 182, 0.2)', // accent
+            ];
+
+            for (let i = 0; i < numParticles; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+
+                // Randomize size
+                const size = Math.random() * 15 + 5;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+
+                // Randomize color
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+                // Randomize position
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+
+                // Randomize animation duration and delay
+                const duration = Math.random() * 10 + 15;
+                const delay = Math.random() * 5;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.animationDelay = `${delay}s`;
+
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Initialize particles
+        createParticles();
+
+        // Save result function
+        function saveResult() {
+            // Get the result content
+            const result = document.getElementById('result').textContent;
+            const timestamp = new Date().toLocaleString();
+
+            // Save to localStorage
+            const index = localStorage.length + 1;
+            localStorage.setItem(index, JSON.stringify({ result: result, date: timestamp }));
+
+            // Show notification instead of alert
+            showNotification('บันทึกข้อมูลเรียบร้อยแล้ว');
+
+            // Update history
+            updateHistoryList();
+        }
+
+        // Show notification function
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+
+            setTimeout(function () {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Update history function
+        function updateHistoryList() {
+            const historyList = document.getElementById('historyList');
+            const history = Object.values(localStorage).map(item => JSON.parse(item));
+
+            if (history.length === 0) {
+                historyList.innerHTML = '<div class="history-item">ไม่มีประวัติการทดสอบ</div>';
+                return;
+            }
+
+            historyList.innerHTML = ''; // Clear existing history
+
+            history.forEach((item, index) => {
+                const historyItem = document.createElement('div');
+                historyItem.classList.add('history-item');
+
+                // Add animation delay for cascading effect
+                historyItem.style.opacity = '0';
+                historyItem.style.animation = `fadeIn 0.3s ease ${0.1 * index}s forwards`;
+
+                historyItem.innerHTML = `
+                    <div class="history-result">${item.result}</div>
+                    <div class="history-date">${item.date}</div>
+                `;
+                historyList.appendChild(historyItem);
+            });
+        }
+
+        // Text animation
+        function animateText(element, text) {
+            element.textContent = '';
+            let index = 0;
+
+            function addChar() {
+                if (index < text.length) {
+                    element.textContent += text.charAt(index);
+                    index++;
+                    setTimeout(addChar, 30);
+                } else {
+                    // Save result when animation completes
+                    saveResult();
+                }
+            }
+
+            addChar();
+        }
+
+        // Initialize result content
+        window.onload = function () {
+            // Get the actual result
+            const resultText = document.getElementById('result').textContent;
+
+            // Animate the text after page loads
+            setTimeout(() => {
+                animateText(document.getElementById('result'), resultText);
+            }, 2000);
+        };
     </script>
+
+
 </body>
+
 </html>
