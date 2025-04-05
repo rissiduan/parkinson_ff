@@ -50,9 +50,11 @@
             0% {
                 transform: scale(1);
             }
+
             50% {
                 transform: scale(1.05);
             }
+
             100% {
                 transform: scale(1);
             }
@@ -62,6 +64,7 @@
             0% {
                 width: 0%;
             }
+
             100% {
                 width: 100%;
             }
@@ -98,6 +101,7 @@
                 opacity: 0;
                 transform: translateY(-30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -122,16 +126,28 @@
             opacity: 0;
         }
 
-        .modal li:nth-child(1) { animation-delay: 0.2s; }
-        .modal li:nth-child(2) { animation-delay: 0.4s; }
-        .modal li:nth-child(3) { animation-delay: 0.6s; }
-        .modal li:nth-child(4) { animation-delay: 0.8s; }
+        .modal li:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .modal li:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        .modal li:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        .modal li:nth-child(4) {
+            animation-delay: 0.8s;
+        }
 
         @keyframes slideIn {
             from {
                 opacity: 0;
                 transform: translateX(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateX(0);
@@ -267,6 +283,81 @@
             margin-top: 10px;
         }
 
+        /* Custom Alert Styles */
+        .alert-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .alert-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            max-width: 80%;
+            width: 350px;
+            box-shadow: var(--card-shadow);
+            animation: alertAppear 0.3s ease forwards;
+        }
+        
+        @keyframes alertAppear {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .alert-icon {
+            color: var(--danger-color);
+            font-size: 48px;
+            margin-bottom: 15px;
+            animation: alertIconPulse 1s infinite alternate;
+        }
+        
+        @keyframes alertIconPulse {
+            from {
+                transform: scale(1);
+            }
+            to {
+                transform: scale(1.1);
+            }
+        }
+        
+        .alert-btn {
+            background: var(--primary-color);
+            color: white;
+            margin-top: 20px;
+        }
+        
+        .alert-btn:hover {
+            background: #3a80d2;
+        }
+        
+        #alertTitle {
+            color: var(--danger-color);
+            margin-bottom: 10px;
+            font-size: 22px;
+        }
+        
+        #alertMessage {
+            margin: 10px 0;
+            line-height: 1.5;
+            color: var(--text-color);
+        }
+
         @media (max-width: 600px) {
             .canvas-container {
                 width: 300px;
@@ -284,6 +375,11 @@
 
             .button {
                 padding: 10px 18px;
+            }
+            
+            .alert-container {
+                width: 280px;
+                padding: 20px;
             }
         }
     </style>
@@ -325,6 +421,22 @@
         </div>
     </div>
 
+    <!-- Custom Alert Modal -->
+    <div class="alert-modal" id="alertModal">
+        <div class="alert-container">
+            <div class="alert-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </div>
+            <h3 id="alertTitle">กรุณาวาดภาพ</h3>
+            <p id="alertMessage">คุณจำเป็นต้องวาดภาพก่อนดำเนินการต่อ</p>
+            <button class="button alert-btn" id="alertButton">เข้าใจแล้ว</button>
+        </div>
+    </div>
+
     <script>
         const canvas = document.getElementById('drawingCanvas');
         const ctx = canvas.getContext('2d');
@@ -343,6 +455,22 @@
         drawingCanvas.width = canvas.width;
         drawingCanvas.height = canvas.height;
         const drawingCtx = drawingCanvas.getContext('2d');
+
+        // Function to show custom alert
+        function showCustomAlert(title, message) {
+            const alertModal = document.getElementById('alertModal');
+            const alertTitle = document.getElementById('alertTitle');
+            const alertMessage = document.getElementById('alertMessage');
+            const alertButton = document.getElementById('alertButton');
+            
+            alertTitle.textContent = title;
+            alertMessage.textContent = message;
+            alertModal.style.display = 'flex';
+            
+            alertButton.onclick = function() {
+                alertModal.style.display = 'none';
+            };
+        }
 
         function drawSpiral() {
             ctx.beginPath();
@@ -477,17 +605,39 @@
         }
 
         function nextTest() {
-            // Show progress overlay
+            // Get image data from the drawing canvas
+            const imageData = drawingCtx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height);
+            const pixels = imageData.data;
+            let isDrawing = false;
+
+            // Check if any pixel is not the initial white color (255, 255, 255)
+            for (let i = 0; i < pixels.length; i += 4) {
+                // Check if the pixel is not white (255, 255, 255)
+                // Also check alpha channel - if alpha is not 255 (fully opaque),
+                // then something has been drawn with transparency
+                if (pixels[i] !== 255 || pixels[i + 1] !== 255 || pixels[i + 2] !== 255 || pixels[i + 3] !== 255) {
+                    isDrawing = true;
+                    break;
+                }
+            }
+
+            // If no drawing was detected, show a custom alert and stop execution
+            if (!isDrawing) {
+                showCustomAlert("กรุณาวาดภาพ", "คุณจำเป็นต้องวาดภาพเส้นตามเส้นประก่อนดำเนินการต่อ");
+                return;  // Stop further actions if no drawing was detected
+            }
+
+            // Proceed with the original logic for sending the image if drawing was detected
             const progressOverlay = document.getElementById('progressOverlay');
             const progressFill = document.getElementById('progressFill');
             const uploadStatus = document.getElementById('uploadStatus');
-            
+
             progressOverlay.style.display = 'flex';
-            
+
             // Animate progress bar
             progressFill.style.width = '0%';
             progressFill.style.animation = 'progress 0.3s linear forwards';
-            
+
             // Create a new canvas for the final image
             const exportCanvas = document.createElement('canvas');
             exportCanvas.width = canvas.width;
@@ -501,6 +651,24 @@
             // Draw the user's drawing on top
             exportCtx.drawImage(drawingCanvas, 0, 0);
 
+            // Double-check if the exported image contains a drawing
+            const exportedImageData = exportCtx.getImageData(0, 0, exportCanvas.width, exportCanvas.height);
+            const exportedPixels = exportedImageData.data;
+            let hasDrawingInExport = false;
+
+            for (let i = 0; i < exportedPixels.length; i += 4) {
+                if (exportedPixels[i] !== 255 || exportedPixels[i + 1] !== 255 || exportedPixels[i + 2] !== 255) {
+                    hasDrawingInExport = true;
+                    break;
+                }
+            }
+
+            if (!hasDrawingInExport) {
+                progressOverlay.style.display = 'none';
+                showCustomAlert("ไม่พบการวาดภาพ", "กรุณาวาดภาพตามเส้นประก่อนดำเนินการต่อ");
+                return;
+            }
+
             // Convert the canvas to a Base64 encoded image (PNG)
             const dataURL = exportCanvas.toDataURL('image/png');
 
@@ -509,7 +677,7 @@
 
             // Send the image data to the server using fetch API
             uploadStatus.textContent = "กำลังประมวลผลรูปวาด...";
-            
+
             fetch('/sp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -568,14 +736,15 @@
 
         // Add button animation on hover
         document.querySelectorAll('.button').forEach(button => {
-            button.addEventListener('mouseover', function() {
+            button.addEventListener('mouseover', function () {
                 this.style.transform = 'translateY(-2px)';
             });
-            button.addEventListener('mouseout', function() {
+            button.addEventListener('mouseout', function () {
                 this.style.transform = 'translateY(0)';
             });
         });
 
+        // Initialize the canvas on page load
         initCanvas();
     </script>
 </body>
