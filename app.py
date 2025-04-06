@@ -22,9 +22,99 @@ def drawn_sp():
 def drawn_wave_page():
     return render_template("drawn_wave.html")
 
+@app.route('/upload')
+def upload_page():
+    return render_template("upload.html")
+
 @app.route('/result')
 def result_page():
     return render_template("result.html")
+
+@app.route('/sp_check', methods=['POST'])
+def sp_check():
+    def extract_hog_features_from_image(image):
+        img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2GRAY)
+        img = cv2.resize(img, (128, 128))
+        hog_features = hog(img, orientations=9, pixels_per_cell=(8, 8), cells_per_block=(2, 2), block_norm='L2-Hys')
+        print(1)
+        return hog_features
+
+    try:
+        data = request.get_json()
+        if not data or 'image' not in data:
+            raise ValueError("No image data found in the request")
+        
+        image_data = data['image'].split(',')[1]
+        image_data = base64.b64decode(image_data)
+        image = Image.open(BytesIO(image_data))
+
+        # Load the spiral model
+        model_path = 'model/model_check/svm_model_sp_check.pkl'
+        with open(model_path, 'rb') as file:
+            loaded_model = pickle.load(file)
+
+        # Extract HOG features from the image
+        hog_features = extract_hog_features_from_image(image)
+        hog_features = np.array(hog_features).reshape(1, -1)
+
+        # Make prediction
+        prediction = loaded_model.predict(hog_features)
+        confidence = max(loaded_model.predict_proba(hog_features)[0])
+
+        # Determine the result based on prediction
+        result = "Healthy" if prediction[0] == 1 else "Parkinson"
+        
+        # Save the result and confidence
+        session['sp_result'] = (result, confidence)
+        print(f"Spiral Check Result: {result} (Confidence: {confidence})")
+        return redirect(url_for('get_results'))
+
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({'error': str(e)})
+
+
+@app.route('/wave_check', methods=['POST'])
+def wave_check():
+    def extract_hog_features_from_image(image):
+        img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2GRAY)
+        img = cv2.resize(img, (128, 128))
+        hog_features = hog(img, orientations=9, pixels_per_cell=(8, 8), cells_per_block=(2, 2), block_norm='L2-Hys')
+        return hog_features
+
+    try:
+        data = request.get_json()
+        if not data or 'image' not in data:
+            raise ValueError("No image data found in the request")
+        
+        image_data = data['image'].split(',')[1]
+        image_data = base64.b64decode(image_data)
+        image = Image.open(BytesIO(image_data))
+
+        # Load the wave model
+        model_path = 'model/model_check/svm_model_wave_check.pkl'
+        with open(model_path, 'rb') as file:
+            loaded_model = pickle.load(file)
+
+        # Extract HOG features from the image
+        hog_features = extract_hog_features_from_image(image)
+        hog_features = np.array(hog_features).reshape(1, -1)
+
+        # Make prediction
+        prediction = loaded_model.predict(hog_features)
+        confidence = max(loaded_model.predict_proba(hog_features)[0])
+
+        # Determine the result based on prediction
+        result = "Healthy" if prediction[0] == 0 else "Parkinson"
+        
+        # Save the result and confidence
+        session['wave_result'] = (result, confidence)
+        print(f"Wave Check Result: {result} (Confidence: {confidence})")
+        return redirect(url_for('get_results'))
+
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({'error': str(e)})
 
 @app.route('/sp', methods=['POST'])
 def cal_Sp():

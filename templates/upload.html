@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parkinson's Test - Upload Images</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.3.0/FileSaver.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #45a049;
+            --background-color: #f5f7fa;
+            --text-color: #2c3e50;
+            --accent-color: #9b59b6;
+            --danger-color: #e74c3c;
+            --card-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        .page-wrapper {
+            opacity: 1;
+            /* Changed from 0 to 1 to remove fade-in animation */
+            transform: translateY(0);
+            /* Changed from translateY(20px) to remove slide-up animation */
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+            transform: rotate(30deg);
+            pointer-events: none;
+        }
+
+        header h1 {
+            color: white;
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            opacity: 1;
+            /* Changed from 0 to 1 to remove fade-in animation */
+            transform: translateY(0);
+            /* Changed from translateY(-20px) to remove slide-up animation */
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 3rem 2rem;
+            min-height: 80vh;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 900px;
+            background-color: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+            opacity: 1;
+            /* Changed from 0 to 1 to remove fade-in animation */
+            transform: scale(1);
+            /* Changed from scale(0.9) to remove scale animation */
+        }
+
+        .upload-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .upload-instructions {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            color: #555;
+            line-height: 1.6;
+            text-align: center;
+            max-width: 700px;
+        }
+
+        .upload-area-wrapper {
+            display: flex;
+            flex-direction: row;
+            gap: 2rem;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .upload-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 350px;
+            position: relative;
+        }
+
+        .upload-label {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .upload-box {
+            width: 100%;
+            height: 250px;
+            border: 2px dashed var(--primary-color);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: rgba(74, 144, 226, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-box:hover {
+            border-color: var(--accent-color);
+            background-color: rgba(155, 89, 182, 0.05);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-box.highlight {
+            border-color: var(--accent-color);
+            background-color: rgba(155, 89, 182, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-box.invalid {
+            border-color: var(--danger-color);
+            background-color: rgba(231, 76, 60, 0.1);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-5px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .upload-box:hover .upload-icon {
+            color: var(--accent-color);
+            transform: scale(1.1);
+        }
+
+        .upload-text {
+            text-align: center;
+            color: #666;
+            padding: 0 1rem;
+        }
+
+        .upload-box input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .image-preview {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .image-preview.show {
+            opacity: 1;
+        }
+
+        .preview-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .upload-box:hover .preview-overlay {
+            opacity: 1;
+        }
+
+        .remove-btn {
+            background: white;
+            color: var(--danger-color);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            transform: scale(1.1);
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .test-button {
+            display: inline-block;
+            padding: 14px 40px;
+            font-size: 1.2rem;
+            color: white;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 2.5rem;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(74, 144, 226, 0.3);
+            opacity: 0.5;
+            /* Changed from 0 to 0.5 since it should be visible but disabled initially */
+            transform: translateY(0);
+            /* Changed from translateY(20px) to remove animation */
+        }
+
+        .test-button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .test-button:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(74, 144, 226, 0.4);
+        }
+
+        .test-button:hover::before {
+            transform: translateX(100%);
+        }
+
+        .test-button:disabled {
+            background: linear-gradient(to right, #b3b3b3, #d6d6d6);
+            cursor: not-allowed;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .test-button:disabled:hover {
+            transform: none;
+        }
+
+        /* Modal styles */
+        .warning-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .warning-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .warning-modal-content {
+            background: white;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            opacity: 1;
+            /* Changed from 0 to 1 to remove animation */
+            transform: scale(1);
+            /* Changed from scale(0.8) to remove animation */
+            transition: all 0.4s ease;
+        }
+
+        .warning-image {
+            width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+        }
+
+        .warning-footer {
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .warning-close {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            color: white;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+        }
+
+        .warning-close:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(74, 144, 226, 0.4);
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 70px;
+            height: 70px;
+            border: 6px solid rgba(74, 144, 226, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s infinite linear;
+            margin-bottom: 1.5rem;
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Alert styles */
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            max-width: 350px;
+            transform: translateX(400px);
+            opacity: 0;
+            transition: all 0.5s ease;
+            z-index: 1100;
+        }
+
+        .alert.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+            margin-right: 15px;
+        }
+
+        .alert-icon.error {
+            color: var(--danger-color);
+        }
+
+        .alert-icon.success {
+            color: var(--secondary-color);
+        }
+
+        .alert-text {
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        /* Remove particles background */
+        /* .particles styles removed */
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .upload-area-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .upload-area {
+                max-width: 100%;
+            }
+
+            .warning-modal-content {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <header>
+            <h1>Parkinson's Test - Image Upload</h1>
+        </header>
+
+        <main>
+            <div class="upload-container">
+                <h2 class="upload-title">Upload Test Images</h2>
+                <p class="upload-instructions">
+                    Please upload or drag and drop two images for the Parkinson's assessment: a spiral drawing and a
+                    wave drawing. The system will analyze both images to provide a comprehensive test result.
+                </p>
+
+                <div class="upload-area-wrapper">
+                    <!-- Spiral upload area -->
+                    <div class="upload-area">
+                        <label class="upload-label">Spiral Drawing</label>
+                        <div class="upload-box" id="spiralUploadBox">
+                            <i class="upload-icon">⟲</i>
+                            <p class="upload-text">Click or drag an image here</p>
+                            <input type="file" id="spiralInput" accept="image/*">
+                            <img id="spiralPreview" class="image-preview" alt="Spiral preview">
+                            <div class="preview-overlay" id="spiralOverlay" style="display: none;">
+                                <button type="button" class="remove-btn" id="removeSpiral">×</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Wave upload area -->
+                    <div class="upload-area">
+                        <label class="upload-label">Wave Drawing</label>
+                        <div class="upload-box" id="waveUploadBox">
+                            <i class="upload-icon">〰️</i>
+                            <p class="upload-text">Click or drag an image here</p>
+                            <input type="file" id="waveInput" accept="image/*">
+                            <img id="wavePreview" class="image-preview" alt="Wave preview">
+                            <div class="preview-overlay" id="waveOverlay" style="display: none;">
+                                <button type="button" class="remove-btn" id="removeWave">×</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="testButton" class="test-button" disabled>Start Test Analysis</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Warning Modal -->
+    <div class="warning-modal" id="warningModal">
+        <div class="warning-modal-content">
+            <img src="image/เตือน.png" alt="Warning Image" class="warning-image" id="warningImage">
+            <div class="warning-footer">
+                <button class="warning-close" id="warningClose">I Understand</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Processing images, please wait...</p>
+    </div>
+
+    <!-- Alert -->
+    <div class="alert" id="alert">
+        <div class="alert-icon" id="alertIcon">!</div>
+        <p class="alert-text" id="alertText"></p>
+    </div>
+
+    <script>
+        // Variables to store uploaded images
+        let spiralImage = null;
+        let waveImage = null;
+
+        // Function to show alert
+        function showAlert(message, type = 'error') {
+            const alert = document.getElementById('alert');
+            const alertIcon = document.getElementById('alertIcon');
+            const alertText = document.getElementById('alertText');
+
+            // Set message and icon
+            alertText.textContent = message;
+            alertIcon.textContent = type === 'error' ? '!' : '✓';
+            alertIcon.className = `alert-icon ${type}`;
+
+            // Show alert
+            alert.classList.add('show');
+
+            // Hide alert after 5 seconds
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 5000);
+        }
+
+        // Function to handle file upload
+        function handleFileUpload(file, previewId, overlayId, boxId, type) {
+            if (!file || !file.type.startsWith('image/')) {
+                showAlert('Please upload a valid image file.');
+                markAsInvalid(boxId);
+                return null;
+            }
+
+            const reader = new FileReader();
+            const preview = document.getElementById(previewId);
+            const overlay = document.getElementById(overlayId);
+            const box = document.getElementById(boxId);
+
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.classList.add('show');
+                overlay.style.display = 'flex';
+
+                // Store image data
+                if (type === 'spiral') {
+                    spiralImage = e.target.result;
+                } else {
+                    waveImage = e.target.result;
+                }
+
+                // Enable test button if both images are uploaded
+                checkTestButtonStatus();
+
+                // Remove animation for image appearance
+                preview.style.opacity = 1;
+                preview.style.transform = 'scale(1)';
+            };
+
+            reader.readAsDataURL(file);
+            return file;
+        }
+
+        // Function to check if test button should be enabled
+        function checkTestButtonStatus() {
+            const testButton = document.getElementById('testButton');
+            testButton.disabled = !(spiralImage && waveImage);
+
+            if (spiralImage && waveImage) {
+                testButton.style.opacity = 1;
+            } else {
+                testButton.style.opacity = 0.5;
+            }
+        }
+
+        // Function to show loading overlay
+        function showLoading() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.classList.add('active');
+        }
+
+        // Function to hide loading overlay
+        function hideLoading() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.classList.remove('active');
+        }
+
+        // Function to mark upload box as invalid
+        function markAsInvalid(boxId) {
+            const box = document.getElementById(boxId);
+            box.classList.add('invalid');
+
+            setTimeout(() => {
+                box.classList.remove('invalid');
+            }, 1000);
+        }
+
+        // Function to verify image with check model first
+        async function verifyImage(imageData, type) {
+            try {
+                const endpoint = type === 'spiral' ? '/verify_spiral' : '/verify_wave';
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ image: imageData }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error verifying ${type} image`);
+                }
+
+                const result = await response.json();
+                return result.valid; // Should return true if valid, false if not
+            } catch (error) {
+                console.error(`Error verifying ${type} image:`, error);
+                return false;
+            }
+        }
+
+        // Function to handle image verification failure
+        function handleInvalidImage(type) {
+            const boxId = type === 'spiral' ? 'spiralUploadBox' : 'waveUploadBox';
+            const box = document.getElementById(boxId);
+
+            // Mark box as invalid with red border
+            box.style.borderColor = 'var(--danger-color)';
+            box.classList.add('invalid');
+
+            // Show alert message
+            showAlert(`The ${type} image doesn't appear to be valid. Please upload a proper ${type} drawing.`, 'error');
+
+            // Reset image data
+            if (type === 'spiral') {
+                spiralImage = null;
+            } else {
+                waveImage = null;
+            }
+
+            // Update test button status
+            checkTestButtonStatus();
+            
+            // Reset border color after 3 seconds
+            setTimeout(() => {
+                box.style.borderColor = 'var(--primary-color)';
+                box.classList.remove('invalid');
+            }, 3000);
+        }
+
+        // Function to send images to server for testing
+        async function performTest() {
+            if (!spiralImage || !waveImage) {
+                showAlert('Please upload both images before starting the test.');
+                return;
+            }
+
+            showLoading();
+
+            try {
+                // First verify both images with the check models
+                const isSpiralValid = await verifyImage(spiralImage, 'spiral');
+                const isWaveValid = await verifyImage(waveImage, 'wave');
+
+                if (!isSpiralValid) {
+                    hideLoading();
+                    handleInvalidImage('spiral');
+                    return;
+                }
+
+                if (!isWaveValid) {
+                    hideLoading();
+                    handleInvalidImage('wave');
+                    return;
+                }
+
+                // If both images are valid, proceed with the analysis
+
+                // Send spiral image data to server
+                const spiralResponse = await fetch('/sp_check', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ image: spiralImage }),
+                });
+
+                if (!spiralResponse.ok) {
+                    throw new Error('Error processing spiral image');
+                }
+
+                // Send wave image data to server
+                const waveResponse = await fetch('/wave_check', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ image: waveImage }),
+                });
+
+                if (!waveResponse.ok) {
+                    throw new Error('Error processing wave image');
+                }
+
+                // After both images have been processed, redirect to results page
+                window.location.replace('/results');
+
+            } catch (error) {
+                hideLoading();
+                console.error('Error processing images:', error);
+                showAlert('An error occurred while processing the images. Please try again.');
+            }
+        }
+
+        // Document ready
+        document.addEventListener('DOMContentLoaded', function () {
+            // Show warning modal on page load
+            const warningImage = document.getElementById('warningImage');
+            // Set max dimensions for the warning image
+            warningImage.style.maxWidth = '90%';
+            warningImage.style.maxHeight = '70vh';
+            warningImage.style.objectFit = 'contain';
+            warningImage.src = "/static/warning.png"; // Update with correct path
+            document.getElementById('warningModal').classList.add('active');
+
+            // Close warning modal
+            document.getElementById('warningClose').addEventListener('click', function () {
+                document.getElementById('warningModal').classList.remove('active');
+            });
+
+            // Spiral upload events
+            const spiralInput = document.getElementById('spiralInput');
+            const spiralBox = document.getElementById('spiralUploadBox');
+            
+            // Fix for click to upload
+            spiralBox.addEventListener('click', function(e) {
+                // Prevent click if we're clicking the remove button
+                if (e.target.id !== 'removeSpiral' && !e.target.closest('#removeSpiral')) {
+                    spiralInput.click();
+                }
+            });
+
+            spiralInput.addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    handleFileUpload(this.files[0], 'spiralPreview', 'spiralOverlay', 'spiralUploadBox', 'spiral');
+                }
+            });
+
+            // Wave upload events
+            const waveInput = document.getElementById('waveInput');
+            const waveBox = document.getElementById('waveUploadBox');
+            
+            // Fix for click to upload
+            waveBox.addEventListener('click', function(e) {
+                // Prevent click if we're clicking the remove button
+                if (e.target.id !== 'removeWave' && !e.target.closest('#removeWave')) {
+                    waveInput.click();
+                }
+            });
+
+            waveInput.addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    handleFileUpload(this.files[0], 'wavePreview', 'waveOverlay', 'waveUploadBox', 'wave');
+                }
+            });
+
+            // Drag and drop for spiral
+            spiralBox.addEventListener('dragover', function (e) {
+                e.preventDefault();
+                this.classList.add('highlight');
+            });
+
+            spiralBox.addEventListener('dragleave', function () {
+                this.classList.remove('highlight');
+            });
+
+            spiralBox.addEventListener('drop', function (e) {
+                e.preventDefault();
+                this.classList.remove('highlight');
+
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    handleFileUpload(e.dataTransfer.files[0], 'spiralPreview', 'spiralOverlay', 'spiralUploadBox', 'spiral');
+                }
+            });
+
+            // Drag and drop for wave
+            waveBox.addEventListener('dragover', function (e) {
+                e.preventDefault();
+                this.classList.add('highlight');
+            });
+
+            waveBox.addEventListener('dragleave', function () {
+                this.classList.remove('highlight');
+            });
+
+            waveBox.addEventListener('drop', function (e) {
+                e.preventDefault();
+                this.classList.remove('highlight');
+
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    handleFileUpload(e.dataTransfer.files[0], 'wavePreview', 'waveOverlay', 'waveUploadBox', 'wave');
+                }
+            });
+
+            // Fixed remove button events
+            const removeSpiral = document.getElementById('removeSpiral');
+            removeSpiral.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation(); // Prevent event bubbling
+                
+                // Reset the preview
+                const preview = document.getElementById('spiralPreview');
+                preview.classList.remove('show');
+                preview.src = '';
+                
+                // Hide overlay
+                document.getElementById('spiralOverlay').style.display = 'none';
+                
+                // Reset input
+                document.getElementById('spiralInput').value = '';
+                
+                // Reset border
+                const box = document.getElementById('spiralUploadBox');
+                box.style.borderColor = 'var(--primary-color)';
+                box.classList.remove('invalid');
+                
+                // Reset image data
+                spiralImage = null;
+                
+                // Update button status
+                checkTestButtonStatus();
+            });
+
+            const removeWave = document.getElementById('removeWave');
+            removeWave.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation(); // Prevent event bubbling
+                
+                // Reset the preview
+                const preview = document.getElementById('wavePreview');
+                preview.classList.remove('show');
+                preview.src = '';
+                
+                // Hide overlay
+                document.getElementById('waveOverlay').style.display = 'none';
+                
+                // Reset input
+                document.getElementById('waveInput').value = '';
+                
+                // Reset border
+                const box = document.getElementById('waveUploadBox');
+                box.style.borderColor = 'var(--primary-color)';
+                box.classList.remove('invalid');
+                
+                // Reset image data
+                waveImage = null;
+                
+                // Update button status
+                checkTestButtonStatus();
+            });
+
+            // Test button event
+            document.getElementById('testButton').addEventListener('click', performTest);
+        });
+    </script>
+</body>
+
+</html>
