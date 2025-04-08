@@ -33,45 +33,52 @@ def result_page():
 @app.route('/sp_check', methods=['POST'])
 def sp_check():
     def extract_hog_features_from_image(image):
+        print("[1] เริ่มแปลงภาพเป็น grayscale และปรับขนาด...")
         img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2GRAY)
         img = cv2.resize(img, (128, 128))
-        hog_features = hog(img, orientations=9, pixels_per_cell=(8, 8), cells_per_block=(2, 2), block_norm='L2-Hys')
-        print(1)
+        print("[2] เริ่มดึง HOG features...")
+        hog_features = hog(img, orientations=9, pixels_per_cell=(8, 8),
+                           cells_per_block=(2, 2), block_norm='L2-Hys')
         return hog_features
 
     try:
+        print("======== SPIRAL CHECK เริ่มต้น ========")
+
+        print("[0] รับข้อมูลจาก client แล้ว")
         data = request.get_json()
         if not data or 'image' not in data:
             raise ValueError("No image data found in the request")
-        
+
+        print("[1] แปลงข้อมูล Base64 กลับเป็นภาพ")
         image_data = data['image'].split(',')[1]
         image_data = base64.b64decode(image_data)
         image = Image.open(BytesIO(image_data))
 
-        # Load the spiral model
+        print("[2] โหลดโมเดลตรวจสอบก้นหอย")
         model_path = 'model/model_check/svm_model_sp_check.pkl'
         with open(model_path, 'rb') as file:
             loaded_model = pickle.load(file)
 
-        # Extract HOG features from the image
+        print("[3] ดึงคุณลักษณะ HOG จากภาพ")
         hog_features = extract_hog_features_from_image(image)
         hog_features = np.array(hog_features).reshape(1, -1)
 
-        # Make prediction
+        print("[4] ทำการพยากรณ์ผล...")
         prediction = loaded_model.predict(hog_features)
         confidence = max(loaded_model.predict_proba(hog_features)[0])
 
-        # Determine the result based on prediction
         result = "Healthy" if prediction[0] == 1 else "Parkinson"
-        
-        # Save the result and confidence
+
+        print(f"[5] ผลลัพธ์การตรวจสอบ: {result} (Confidence: {confidence:.4f})")
         session['sp_result'] = (result, confidence)
-        print(f"Spiral Check Result: {result} (Confidence: {confidence})")
+
+        print("======== SPIRAL CHECK เสร็จสิ้น ========")
         return redirect(url_for('get_results'))
 
     except Exception as e:
-        print(f"Error: {str(e)}")
+        print(f"[ERROR] เกิดข้อผิดพลาด: {str(e)}")
         return jsonify({'error': str(e)})
+
 
 
 @app.route('/wave_check', methods=['POST'])

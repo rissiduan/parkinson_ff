@@ -486,9 +486,6 @@
             color: #555;
         }
 
-        /* Remove particles background */
-        /* .particles styles removed */
-
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .upload-area-wrapper {
@@ -652,18 +649,6 @@
             }
         }
 
-        // Function to show loading overlay
-        function showLoading() {
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            loadingOverlay.classList.add('active');
-        }
-
-        // Function to hide loading overlay
-        function hideLoading() {
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            loadingOverlay.classList.remove('active');
-        }
-
         // Function to mark upload box as invalid
         function markAsInvalid(boxId) {
             const box = document.getElementById(boxId);
@@ -672,123 +657,6 @@
             setTimeout(() => {
                 box.classList.remove('invalid');
             }, 1000);
-        }
-
-        // Function to verify image with check model first
-        async function verifyImage(imageData, type) {
-            try {
-                const endpoint = type === 'spiral' ? '/verify_spiral' : '/verify_wave';
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ image: imageData }),
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Error verifying ${type} image`);
-                }
-
-                const result = await response.json();
-                return result.valid; // Should return true if valid, false if not
-            } catch (error) {
-                console.error(`Error verifying ${type} image:`, error);
-                return false;
-            }
-        }
-
-        // Function to handle image verification failure
-        function handleInvalidImage(type) {
-            const boxId = type === 'spiral' ? 'spiralUploadBox' : 'waveUploadBox';
-            const box = document.getElementById(boxId);
-
-            // Mark box as invalid with red border
-            box.style.borderColor = 'var(--danger-color)';
-            box.classList.add('invalid');
-
-            // Show alert message
-            showAlert(`The ${type} image doesn't appear to be valid. Please upload a proper ${type} drawing.`, 'error');
-
-            // Reset image data
-            if (type === 'spiral') {
-                spiralImage = null;
-            } else {
-                waveImage = null;
-            }
-
-            // Update test button status
-            checkTestButtonStatus();
-            
-            // Reset border color after 3 seconds
-            setTimeout(() => {
-                box.style.borderColor = 'var(--primary-color)';
-                box.classList.remove('invalid');
-            }, 3000);
-        }
-
-        // Function to send images to server for testing
-        async function performTest() {
-            if (!spiralImage || !waveImage) {
-                showAlert('Please upload both images before starting the test.');
-                return;
-            }
-
-            showLoading();
-
-            try {
-                // First verify both images with the check models
-                const isSpiralValid = await verifyImage(spiralImage, 'spiral');
-                const isWaveValid = await verifyImage(waveImage, 'wave');
-
-                if (!isSpiralValid) {
-                    hideLoading();
-                    handleInvalidImage('spiral');
-                    return;
-                }
-
-                if (!isWaveValid) {
-                    hideLoading();
-                    handleInvalidImage('wave');
-                    return;
-                }
-
-                // If both images are valid, proceed with the analysis
-
-                // Send spiral image data to server
-                const spiralResponse = await fetch('/sp_check', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ image: spiralImage }),
-                });
-
-                if (!spiralResponse.ok) {
-                    throw new Error('Error processing spiral image');
-                }
-
-                // Send wave image data to server
-                const waveResponse = await fetch('/wave_check', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ image: waveImage }),
-                });
-
-                if (!waveResponse.ok) {
-                    throw new Error('Error processing wave image');
-                }
-
-                // After both images have been processed, redirect to results page
-                window.location.replace('/results');
-
-            } catch (error) {
-                hideLoading();
-                console.error('Error processing images:', error);
-                showAlert('An error occurred while processing the images. Please try again.');
-            }
         }
 
         // Document ready
@@ -810,9 +678,9 @@
             // Spiral upload events
             const spiralInput = document.getElementById('spiralInput');
             const spiralBox = document.getElementById('spiralUploadBox');
-            
+
             // Fix for click to upload
-            spiralBox.addEventListener('click', function(e) {
+            spiralBox.addEventListener('click', function (e) {
                 // Prevent click if we're clicking the remove button
                 if (e.target.id !== 'removeSpiral' && !e.target.closest('#removeSpiral')) {
                     spiralInput.click();
@@ -828,9 +696,9 @@
             // Wave upload events
             const waveInput = document.getElementById('waveInput');
             const waveBox = document.getElementById('waveUploadBox');
-            
+
             // Fix for click to upload
-            waveBox.addEventListener('click', function(e) {
+            waveBox.addEventListener('click', function (e) {
                 // Prevent click if we're clicking the remove button
                 if (e.target.id !== 'removeWave' && !e.target.closest('#removeWave')) {
                     waveInput.click();
@@ -886,26 +754,26 @@
             removeSpiral.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation(); // Prevent event bubbling
-                
+
                 // Reset the preview
                 const preview = document.getElementById('spiralPreview');
                 preview.classList.remove('show');
                 preview.src = '';
-                
+
                 // Hide overlay
                 document.getElementById('spiralOverlay').style.display = 'none';
-                
+
                 // Reset input
                 document.getElementById('spiralInput').value = '';
-                
+
                 // Reset border
                 const box = document.getElementById('spiralUploadBox');
                 box.style.borderColor = 'var(--primary-color)';
                 box.classList.remove('invalid');
-                
+
                 // Reset image data
                 spiralImage = null;
-                
+
                 // Update button status
                 checkTestButtonStatus();
             });
@@ -914,32 +782,32 @@
             removeWave.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation(); // Prevent event bubbling
-                
+
                 // Reset the preview
                 const preview = document.getElementById('wavePreview');
                 preview.classList.remove('show');
                 preview.src = '';
-                
+
                 // Hide overlay
                 document.getElementById('waveOverlay').style.display = 'none';
-                
+
                 // Reset input
                 document.getElementById('waveInput').value = '';
-                
+
                 // Reset border
                 const box = document.getElementById('waveUploadBox');
                 box.style.borderColor = 'var(--primary-color)';
                 box.classList.remove('invalid');
-                
+
                 // Reset image data
                 waveImage = null;
-                
+
                 // Update button status
                 checkTestButtonStatus();
             });
 
-            // Test button event
-            document.getElementById('testButton').addEventListener('click', performTest);
+            // Test button event - REMOVED
+            // The performTest function and event listener for the test button have been removed
         });
     </script>
 </body>
