@@ -659,6 +659,145 @@
             }, 1000);
         }
 
+        // Function to perform test
+        function performTest() {
+            // Show loading overlay
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.classList.add('active');
+
+            const progressText = document.querySelector('.loading-text');
+            progressText.textContent = "กำลังตรวจสอบรูปก้นหอย...";
+
+            // First, validate the spiral image
+            const spiralData = { image: spiralImage };
+
+            fetch('/sp_check', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(spiralData)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Server error: ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Check if the spiral image is valid
+                    // Check if the spiral image is valid
+                    if (data.result !== "Healthy" && data.result !== "Yes") { // เพิ่ม "Yes" ในเงื่อนไข
+                        // Mark spiral image as invalid
+                        const spiralBox = document.getElementById('spiralUploadBox');
+                        spiralBox.style.borderColor = 'var(--danger-color)';
+
+                        loadingOverlay.classList.remove('active');
+                        showAlert('รูปก้นหอยไม่ถูกต้อง กรุณาอัพโหลดรูปใหม่', 'error');
+
+                        // Reset spiral image
+                        document.getElementById('removeSpiral').click();
+                        throw new Error('Invalid spiral image');
+                    }
+
+
+                    // If spiral image is valid, proceed to validate wave image
+                    progressText.textContent = "กำลังตรวจสอบรูปคลื่น...";
+
+                    const waveData = { image: waveImage };
+                    return fetch('/wave_check', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(waveData)
+                    });
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Server error: ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Check if the wave image is valid
+                    if (data.result !== "Healthy"&& data.result !== "Yes") {
+                        // Mark wave image as invalid
+                        const waveBox = document.getElementById('waveUploadBox');
+                        waveBox.style.borderColor = 'var(--danger-color)';
+
+                        loadingOverlay.classList.remove('active');
+                        showAlert('รูปคลื่นไม่ถูกต้อง กรุณาอัพโหลดรูปใหม่', 'error');
+
+                        // Reset wave image
+                        document.getElementById('removeWave').click();
+                        throw new Error('Invalid wave image');
+                    }
+
+                    // Both images are valid, now submit them for analysis
+                    progressText.textContent = "กำลังวิเคราะห์รูปก้นหอย...";
+
+                    return fetch('/sp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ image: spiralImage })
+                    });
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Server error: ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Spiral analysis successful, now analyze wave
+                    progressText.textContent = "กำลังวิเคราะห์รูปคลื่น...";
+
+                    const formData = new FormData();
+                    formData.append('image', waveImage);
+
+                    return fetch('/Wave', {
+                        method: 'POST',
+                        body: formData
+                    });
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Server error: ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Both analyses successful
+                    progressText.textContent = "การวิเคราะห์สำเร็จ! กำลังนำคุณไปยังหน้าผลลัพธ์...";
+
+                    // Redirect to results page after a short delay
+                    setTimeout(() => {
+                        window.location.href = '/results';
+                    }, 1000);
+                })
+                .catch(error => {
+                    // Handle any errors that weren't already handled
+                    if (error.message !== 'Invalid spiral image' && error.message !== 'Invalid wave image') {
+                        progressText.textContent = 'เกิดข้อผิดพลาด: ' + error.message + ' (คลิกที่ใดก็ได้เพื่อปิด)';
+
+                        // Allow user to dismiss the overlay by clicking
+                        loadingOverlay.addEventListener('click', function hideOverlay() {
+                            loadingOverlay.classList.remove('active');
+                            loadingOverlay.removeEventListener('click', hideOverlay);
+                        });
+                    }
+                });
+        }
+
+        // และเพิ่ม event listener สำหรับปุ่ม Test Button
+        document.addEventListener('DOMContentLoaded', function () {
+            // ... (code เดิมที่มีอยู่แล้ว)
+
+            // Test button event
+            const testButton = document.getElementById('testButton');
+            testButton.addEventListener('click', function () {
+                if (!testButton.disabled) {
+                    performTest();
+                }
+            });
+        });
         // Document ready
         document.addEventListener('DOMContentLoaded', function () {
             // Show warning modal on page load
@@ -806,8 +945,7 @@
                 checkTestButtonStatus();
             });
 
-            // Test button event - REMOVED
-            // The performTest function and event listener for the test button have been removed
+
         });
     </script>
 </body>
