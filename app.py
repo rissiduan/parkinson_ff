@@ -52,8 +52,9 @@ def sp_check():
         features = extract_flattened_features(image).reshape(1, -1)
         prediction = model.predict(features)
         result = "Yes" if prediction[0] == 1 else "No"
-
+        print(result)
         confidence = model.predict_proba(features)[0].max() if hasattr(model, 'predict_proba') else 1.0
+        print(result)
         return jsonify({'status': 'success', 'result': result, 'confidence': float(confidence)})
     except Exception as e:
         return jsonify({'error': str(e)})
