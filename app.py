@@ -6,8 +6,9 @@ from flask import Flask, render_template, request, jsonify, session
 from io import BytesIO
 from PIL import Image
 import base64
+import joblib
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 app.secret_key = 'a_random_and_secure_string'
 
 # ---------- Utility Functions ----------
@@ -37,26 +38,44 @@ def upload():
 def result():
     return render_template("result.html")
 
-# ---------- Spiral Precheck ----------
+# ---------- SP Precheck ----------
 @app.route('/sp_check', methods=['POST'])
 def sp_check():
     try:
         data = request.get_json()
+        # Decode image
         image_data = base64.b64decode(data['image'].split(',')[1])
         image = Image.open(BytesIO(image_data))
 
-        model_path = os.path.join('model', 'model_check', 'svm_model_sp_check.pk')
-        with open(model_path, 'rb') as f:
-            model = pickle.load(f)
+        # Get model path from environment variable (fall back to default if not set)
+        model_path_sp = os.environ.get('MODEL_PATH_SVM_SP', 'model/model_check/svm_model_sp_check.pkl')
 
+        # Check if the model exists
+        if not os.path.exists(model_path_sp):  
+            raise FileNotFoundError(f"Model file not found at {model_path_sp}")
+        
+        # Load the model
+        with open(model_path_sp, 'rb') as f:
+            model = joblib.load(f)
+            print("Model loaded successfully")
+
+        # Extract features from the image
         features = extract_flattened_features(image).reshape(1, -1)
+        
+        # Make prediction
         prediction = model.predict(features)
         result = "Yes" if prediction[0] == 1 else "No"
-        print(result)
+        print(f"Prediction result: {result}")
+
+        # Calculate confidence
         confidence = model.predict_proba(features)[0].max() if hasattr(model, 'predict_proba') else 1.0
-        print(result)
+        
+        # Return the response
         return jsonify({'status': 'success', 'result': result, 'confidence': float(confidence)})
+
     except Exception as e:
+        # Print the error and return a response
+        print(f"Error: {str(e)}")
         return jsonify({'error': str(e)})
 
 # ---------- Wave Precheck ----------
@@ -67,62 +86,110 @@ def wave_check():
         image_data = base64.b64decode(data['image'].split(',')[1])
         image = Image.open(BytesIO(image_data))
 
-        model_path = os.path.join('model', 'model_check', 'svm_model_wave_check.pk')
-        with open(model_path, 'rb') as f:
-            model = pickle.load(f)
+        # Get model path from environment variable (fall back to default if not set)
+        model_path_wave = os.environ.get('MODEL_PATH_SVM_WAVE', 'model/model_check/svm_model_wave_check.pkl')
 
+        # Check if the model exists
+        if not os.path.exists(model_path_wave):
+            raise FileNotFoundError(f"Model file not found at {model_path_wave}")
+
+        # Load the model
+        with open(model_path_wave, 'rb') as f:
+            model = joblib.load(f)
+            print("Model loaded successfully")
+
+        # Extract features from the image
         features = extract_flattened_features(image).reshape(1, -1)
+        
+        # Make prediction
         prediction = model.predict(features)
         result = "Yes" if prediction[0] == 1 else "No"
+        print(f"Prediction result: {result}")
 
+        # Calculate confidence
         confidence = model.predict_proba(features)[0].max() if hasattr(model, 'predict_proba') else 1.0
+        
+        # Return the response
         return jsonify({'status': 'success', 'result': result, 'confidence': float(confidence)})
+
     except Exception as e:
+        # Print the error and return a response
+        print(f"Error: {str(e)}")
         return jsonify({'error': str(e)})
+
 
 # ---------- Final Spiral ----------
 @app.route('/sp', methods=['POST'])
 def final_spiral():
     try:
+        print("📥 [SP] Received request")
         data = request.get_json()
         image_data = base64.b64decode(data['image'].split(',')[1])
         image = Image.open(BytesIO(image_data))
+        print("🖼️ [SP] Image decoded successfully")
 
         model_path = os.path.join('model', 'model_sprial_SVM_new.pkl')
+        print(f"🔍 [SP] Model path: {model_path}")
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"Model file not found at {model_path}")
+
         with open(model_path, 'rb') as f:
-            model = pickle.load(f)
+            model = joblib.load(f)
+        print("✅ [SP] Model loaded successfully")
 
         features = extract_flattened_features(image).reshape(1, -1)
+        print("📊 [SP] Features extracted")
+
         prediction = model.predict(features)
-        result = "Healthy" if prediction[0] == 1 else "Parkinson"
+        print(f"🧠 [SP] Raw prediction output: {prediction}")
+
+        result = "Healthy" if prediction[0] == 0 else "Parkinson"
         confidence = model.predict_proba(features)[0].max() if hasattr(model, 'predict_proba') else 1.0
+        print(f"✅ [SP] Prediction result: {result} (Confidence: {confidence*100:.2f}%)")
 
         session['sp_result'] = (result, confidence)
         return jsonify({'status': 'success', 'result': result, 'confidence': float(confidence)})
     except Exception as e:
+        print(f"❌ [SP] Error occurred: {str(e)}")
         return jsonify({'error': str(e)})
+
 
 # ---------- Final Wave ----------
 @app.route('/Wave', methods=['POST'])
 def final_wave():
     try:
+        print("📥 [WAVE] Received request")
         data = request.get_json()
         image_data = base64.b64decode(data['image'].split(',')[1])
         image = Image.open(BytesIO(image_data))
+        print("🖼️ [WAVE] Image decoded successfully")
 
         model_path = os.path.join('model', 'model_wave_SVM_new.pkl')
+        print(f"🔍 [WAVE] Model path: {model_path}")
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"Model file not found at {model_path}")
+
         with open(model_path, 'rb') as f:
-            model = pickle.load(f)
+            model = joblib.load(f)
+        print("✅ [WAVE] Model loaded successfully")
 
         features = extract_flattened_features(image).reshape(1, -1)
+        print("📊 [WAVE] Features extracted")
+
         prediction = model.predict(features)
+        print(f"🧠 [WAVE] Raw prediction output: {prediction}")
+
         result = "Healthy" if prediction[0] == 0 else "Parkinson"
         confidence = model.predict_proba(features)[0].max() if hasattr(model, 'predict_proba') else 1.0
+        print(f"✅ [WAVE] Prediction result: {result} (Confidence: {confidence*100:.2f}%)")
 
         session['wave_result'] = (result, confidence)
         return jsonify({'status': 'success', 'result': result, 'confidence': float(confidence)})
     except Exception as e:
+        print(f"❌ [WAVE] Error occurred: {str(e)}")
         return jsonify({'error': str(e)})
+
+
 
 # ---------- Combined Result ----------
 @app.route('/results', methods=['GET'])
