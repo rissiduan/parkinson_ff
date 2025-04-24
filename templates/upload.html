@@ -753,7 +753,7 @@
                     }
 
                     progressText.textContent = "กำลังวิเคราะห์รูปก้นหอย...";
-                    return fetch('/sp', {
+                    return fetch('/sp-upload', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ image: spiralImage })
@@ -765,7 +765,7 @@
                 })
                 .then(data => {
                     progressText.textContent = "กำลังวิเคราะห์รูปคลื่น...";
-                    return fetch('/Wave', {
+                    return fetch('/wave-upload', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ image: waveImage }) // ✅ ส่งเป็น JSON แทน FormData
