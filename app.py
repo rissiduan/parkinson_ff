@@ -150,7 +150,7 @@ def sp_upload():
         image_data = base64.b64decode(data['image'].split(',')[1])
         image = Image.open(BytesIO(image_data))
 
-        model_path = 'model/svm_spiral_model_ff4.pkl'
+        model_path = 'model/svm_spiral_model_ff4-new.pkl'
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"Model not found at {model_path}")
 
