@@ -599,7 +599,7 @@
     <div class="warning-modal" id="warningModal">
         <div class="warning-modal-content">
             <h2 class="warning-title">Correct Testing Format</h2>
-            <img src="{{ url_for('static', filename='i.png') }}" alt="Warning Image" class="warning-image" id="warningImage">
+            <img src="/get-image" alt="Warning Image" class="warning-image" id="warningImage">
             <div class="warning-footer">
                 <button class="warning-close" id="warningClose">I Understand</button>
             </div>
@@ -809,6 +809,7 @@
             document.getElementById('backButton').addEventListener('click', function () {
                 window.location.href = '/';
             });
+
             // Show warning modal on page load
             const warningImage = document.getElementById('warningImage');
             // กำหนดสไตล์เพื่อให้ภาพอยู่ตรงกลางและมีขนาดใหญ่ขึ้น
@@ -827,11 +828,53 @@
             document.getElementById('warningModal').style.alignItems = 'center';
             document.getElementById('warningModal').style.justifyContent = 'center';
 
-            // Fixed image path
-            warningImage.src = "../image/i.png";
+            // Fixed image path - แก้ไขส่วนนี้ - อย่าประกาศ warningImage ซ้ำ
+            warningImage.onerror = function () {
+                console.error('Failed to load image');
+                // ทดลองใช้ Data URL แทน
+                const canvas = document.createElement('canvas');
+                canvas.width = 400;
+                canvas.height = 300;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = 'lightblue';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.font = '24px Arial';
+                ctx.fillStyle = 'black';
+                ctx.textAlign = 'center';
+                ctx.fillText('ตัวอย่างรูปภาพคำแนะนำ', canvas.width / 2, canvas.height / 2);
+                warningImage.src = canvas.toDataURL();
+            };
+
+            // พยายามโหลดรูปภาพจากหลายๆเส้นทาง
+            const paths = [
+                '/static/i.png',
+                '/get-image',
+                './static/i.png',
+                '../static/i.png',
+                '/images/i.png',
+                './images/i.png'
+            ];
+
+            let loaded = false;
+            function tryNextPath(index) {
+                if (index >= paths.length || loaded) return;
+                console.log('Trying path:', paths[index]);
+                const img = new Image();
+                img.onload = function () {
+                    console.log('Image loaded from:', paths[index]);
+                    warningImage.src = paths[index];
+                    loaded = true;
+                };
+                img.onerror = function () {
+                    console.log('Failed to load from:', paths[index]);
+                    tryNextPath(index + 1);
+                };
+                img.src = paths[index];
+            }
+
+            tryNextPath(0);
+
             document.getElementById('warningModal').classList.add('active');
-
-
 
             // Close warning modal
             document.getElementById('warningClose').addEventListener('click', function () {
@@ -911,66 +954,66 @@
                     handleFileUpload(e.dataTransfer.files[0], 'wavePreview', 'waveOverlay', 'waveUploadBox', 'wave');
                 }
             });
-
-            // Fixed remove button events
-            const removeSpiral = document.getElementById('removeSpiral');
-            removeSpiral.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation(); // Prevent event bubbling
-
-                // Reset the preview
-                const preview = document.getElementById('spiralPreview');
-                preview.classList.remove('show');
-                preview.src = '';
-
-                // Hide overlay
-                document.getElementById('spiralOverlay').style.display = 'none';
-
-                // Reset input
-                document.getElementById('spiralInput').value = '';
-
-                // Reset border
-                const box = document.getElementById('spiralUploadBox');
-                box.style.borderColor = 'var(--primary-color)';
-                box.classList.remove('invalid');
-
-                // Reset image data
-                spiralImage = null;
-
-                // Update button status
-                checkTestButtonStatus();
-            });
-
-            const removeWave = document.getElementById('removeWave');
-            removeWave.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation(); // Prevent event bubbling
-
-                // Reset the preview
-                const preview = document.getElementById('wavePreview');
-                preview.classList.remove('show');
-                preview.src = '';
-
-                // Hide overlay
-                document.getElementById('waveOverlay').style.display = 'none';
-
-                // Reset input
-                document.getElementById('waveInput').value = '';
-
-                // Reset border
-                const box = document.getElementById('waveUploadBox');
-                box.style.borderColor = 'var(--primary-color)';
-                box.classList.remove('invalid');
-
-                // Reset image data
-                waveImage = null;
-
-                // Update button status
-                checkTestButtonStatus();
-            });
-
-
         });
+
+        // Fixed remove button events
+        const removeSpiral = document.getElementById('removeSpiral');
+        removeSpiral.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation(); // Prevent event bubbling
+
+            // Reset the preview
+            const preview = document.getElementById('spiralPreview');
+            preview.classList.remove('show');
+            preview.src = '';
+
+            // Hide overlay
+            document.getElementById('spiralOverlay').style.display = 'none';
+
+            // Reset input
+            document.getElementById('spiralInput').value = '';
+
+            // Reset border
+            const box = document.getElementById('spiralUploadBox');
+            box.style.borderColor = 'var(--primary-color)';
+            box.classList.remove('invalid');
+
+            // Reset image data
+            spiralImage = null;
+
+            // Update button status
+            checkTestButtonStatus();
+        });
+
+        const removeWave = document.getElementById('removeWave');
+        removeWave.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation(); // Prevent event bubbling
+
+            // Reset the preview
+            const preview = document.getElementById('wavePreview');
+            preview.classList.remove('show');
+            preview.src = '';
+
+            // Hide overlay
+            document.getElementById('waveOverlay').style.display = 'none';
+
+            // Reset input
+            document.getElementById('waveInput').value = '';
+
+            // Reset border
+            const box = document.getElementById('waveUploadBox');
+            box.style.borderColor = 'var(--primary-color)';
+            box.classList.remove('invalid');
+
+            // Reset image data
+            waveImage = null;
+
+            // Update button status
+            checkTestButtonStatus();
+        });
+
+
     </script>
 </body>
 

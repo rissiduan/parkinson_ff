@@ -7,10 +7,18 @@ from io import BytesIO
 from PIL import Image
 import base64
 import joblib
+from flask import send_from_directory
+from flask import send_file
+from PIL import Image
 
-app = Flask(__name__, static_folder='static')
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.secret_key = 'a_random_and_secure_string'
 
+# เพิ่มโค้ดเพื่อตรวจสอบว่า Flask เห็น static folder หรือไม่
+print(f"Static folder path: {app.static_folder}")
+print(f"Static folder exists: {os.path.exists(app.static_folder)}")
+if os.path.exists(app.static_folder):
+    print(f"Files in static folder: {os.listdir(app.static_folder)}")
 # ---------- Utility Functions ----------
 def extract_flattened_features(image):
     img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2GRAY)
@@ -38,6 +46,43 @@ def upload():
 def result():
     return render_template("result.html")
 
+@app.route('/images/<path:filename>')
+def serve_image(filename):
+    return send_from_directory('images', filename)
+
+@app.route('/test-image')
+def test_image():
+    return f"<h1>ทดสอบรูปภาพ</h1><img src='/static/i.png' alt='Test image'>"
+
+@app.route('/check-static')
+def check_static():
+    static_path = app.static_folder
+    if os.path.exists(static_path):
+        files = os.listdir(static_path)
+        return f"Static folder: {static_path}<br>Files found: {files}"
+    else:
+        return f"Static folder not found at: {static_path}"
+    
+@app.route('/get-image')
+def get_image():
+    try:
+        # ใช้เส้นทางแบบสัมบูรณ์เพื่อเข้าถึงรูปภาพ
+        image_path = os.path.join(os.path.dirname(__file__), 'static', 'i.png')
+        print(f"Trying to serve image from: {image_path}")
+        print(f"File exists: {os.path.isfile(image_path)}")
+        return send_file(image_path, mimetype='image/png')
+    except Exception as e:
+        return f"Error: {str(e)}"
+    
+@app.route('/create-test-image')
+def create_test_image():
+    try:
+        img = Image.new('RGB', (100, 100), color = 'red')
+        test_img_path = os.path.join(app.static_folder, 'test.png')
+        img.save(test_img_path)
+        return f"Test image created at {test_img_path}<br><img src='/static/test.png'>"
+    except Exception as e:
+        return f"Error: {str(e)}"
 # ---------- SP Precheck ----------
 @app.route('/sp_check', methods=['POST'])
 def sp_check():
