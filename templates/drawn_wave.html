@@ -647,30 +647,31 @@
             // Convert the canvas to a Base64 encoded image (PNG)
             const dataURL = exportCanvas.toDataURL('image/png');
 
-            // ส่วนที่แก้ไข: ใช้ FormData แทน JSON ตามที่ Python คาดหวัง
-            const formData = new FormData();
-            formData.append('image', dataURL);
-
-            // Send the image data to the server using fetch API
+            // แสดงสถานะ
             uploadStatus.textContent = "กำลังประมวลผลรูปวาด...";
+            progressFill.style.width = '50%'; // เพิ่มแถบความคืบหน้า
 
             fetch('/Wave', {
                 method: 'POST',
-                body: formData  // ส่งเป็น FormData แทน JSON
+                headers: {
+                    'Content-Type': 'application/json' // ✅ ต้องระบุ เพราะเราส่ง JSON
+                },
+                body: JSON.stringify({
+                    image: dataURL  // ✅ ต้องมี key ชื่อ 'image' เพราะฝั่ง backend ดึง data['image']
+                })
             })
-                .then(response => {
-                    if (response.ok) {
-                        uploadStatus.textContent = "การส่งสำเร็จ! กำลังนำคุณไปยังหน้าถัดไป...";
-                        // Make sure the progress bar reaches 100% 
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        uploadStatus.textContent = "ส่งสำเร็จ! กำลังนำคุณไปยังหน้าถัดไป...";
                         progressFill.style.width = '100%';
-                        // Redirect after a slight delay to show completion
+
                         setTimeout(() => {
-                            window.location.replace('/results');  // แก้ไขเส้นทางให้ตรงกับ Python route
+                            window.location.replace('/results');
                         }, 500);
                     } else {
-                        uploadStatus.textContent = 'เกิดข้อผิดพลาดที่เซิร์ฟเวอร์: ' + response.statusText;
+                        uploadStatus.textContent = 'เกิดข้อผิดพลาด: ' + (data.error || 'ไม่ทราบสาเหตุ');
                         progressFill.style.backgroundColor = 'var(--danger-color)';
-                        // Allow user to dismiss the overlay after error
                         setTimeout(() => {
                             progressOverlay.addEventListener('click', function hideOverlay() {
                                 progressOverlay.style.display = 'none';
@@ -681,9 +682,8 @@
                     }
                 })
                 .catch(error => {
-                    uploadStatus.textContent = 'เกิดข้อผิดพลาด: ' + error;
+                    uploadStatus.textContent = 'เกิดข้อผิดพลาดในการเชื่อมต่อ: ' + error;
                     progressFill.style.backgroundColor = 'var(--danger-color)';
-                    // Allow user to dismiss the overlay after error
                     setTimeout(() => {
                         progressOverlay.addEventListener('click', function hideOverlay() {
                             progressOverlay.style.display = 'none';
@@ -692,6 +692,8 @@
                         uploadStatus.textContent += " (คลิกที่ใดก็ได้เพื่อปิด)";
                     }, 2000);
                 });
+
+
         }
 
         // Event listeners

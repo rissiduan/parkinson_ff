@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,7 +40,7 @@
         header {
             background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
             padding: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             position: relative;
             overflow: hidden;
         }
@@ -51,7 +52,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
             transform: rotate(30deg);
             pointer-events: none;
         }
@@ -61,7 +62,7 @@
             text-align: center;
             font-size: 2.5rem;
             font-weight: 600;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
             opacity: 0;
             transform: translateY(-20px);
         }
@@ -163,7 +164,7 @@
             overflow-y: auto;
             margin-bottom: 2rem;
             border-radius: 8px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
         }
 
         /* Scrollbar styling */
@@ -192,11 +193,14 @@
             margin: 0 auto;
         }
 
-        table, th, td {
+        table,
+        th,
+        td {
             border: none;
         }
 
-        th, td {
+        th,
+        td {
             padding: 15px;
             text-align: center;
         }
@@ -243,13 +247,13 @@
             transform: translateY(-5px);
             box-shadow: 0 8px 15px rgba(231, 76, 60, 0.4);
         }
-        
+
         /* No data message styling */
         .no-data {
             color: #888;
             font-style: italic;
         }
-        
+
         /* Particles animation */
         .particles {
             position: fixed;
@@ -260,29 +264,34 @@
             pointer-events: none;
             z-index: -1;
         }
-        
+
         .particle {
             position: absolute;
             border-radius: 50%;
             opacity: 0.6;
             animation: float 15s infinite ease-in-out;
         }
-        
+
         @keyframes float {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: translateY(0) translateX(0);
             }
+
             25% {
                 transform: translateY(-30px) translateX(15px);
             }
+
             50% {
                 transform: translateY(-15px) translateX(-15px);
             }
+
             75% {
                 transform: translateY(30px) translateX(15px);
             }
         }
-        
+
         /* Loading spinner */
         .loading-spinner {
             width: 50px;
@@ -298,17 +307,30 @@
             margin-left: -25px;
             z-index: 1000;
         }
-        
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
-        
+
         /* Pulse animation for important elements */
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(74, 144, 226, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(74, 144, 226, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(74, 144, 226, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(74, 144, 226, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(74, 144, 226, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(74, 144, 226, 0);
+            }
         }
 
         /* Modal Styles */
@@ -360,17 +382,17 @@
             left: 0;
             right: 0;
             height: 6px;
-            background: linear-gradient(90deg, 
-                rgba(255,255,255,0.3) 0%, 
-                rgba(255,255,255,0.6) 50%, 
-                rgba(255,255,255,0.3) 100%);
+            background: linear-gradient(90deg,
+                    rgba(255, 255, 255, 0.3) 0%,
+                    rgba(255, 255, 255, 0.6) 50%,
+                    rgba(255, 255, 255, 0.3) 100%);
         }
 
         .modal-header h3 {
             font-size: 1.7rem;
             margin: 0;
             font-weight: 600;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
         }
 
         .modal-body {
@@ -406,7 +428,7 @@
             justify-content: center;
             gap: 8px;
             min-width: 160px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         .btn-draw {
@@ -419,14 +441,14 @@
 
         .modal-btn:hover {
             transform: translateY(-5px);
-            box-shadow: 0 7px 15px rgba(0,0,0,0.15);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.15);
         }
 
         .modal-close {
             position: absolute;
             top: 15px;
             right: 15px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             border: none;
             width: 30px;
             height: 30px;
@@ -441,21 +463,56 @@
         }
 
         .modal-close:hover {
-            background: rgba(255,255,255,0.4);
+            background: rgba(255, 255, 255, 0.4);
             transform: rotate(90deg);
         }
 
-     
-        
+        /* Recommended button styling */
+        .recommended-btn {
+            position: relative;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .recommend-badge {
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            background: #ff9800;
+            color: white;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transform: rotate(5deg);
+        }
+
+        /* Enhance the pulse animation for the recommended button */
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+            }
+        }
     </style>
 </head>
+
 <body>
     <!-- Loading spinner -->
     <div class="loading-spinner" id="loading-spinner"></div>
-    
+
     <!-- Particles background -->
     <div class="particles" id="particles"></div>
-    
+
     <div class="page-wrapper">
         <header>
             <h1 class="animate__animated">Parkinson's Test</h1>
@@ -464,7 +521,8 @@
         <main>
             <div class="start-container">
                 <p class="start-text">
-                    Welcome to the Parkinson's Test. This simple drawing test can help detect early signs of Parkinson's disease. Please click below to start the assessment.
+                    Welcome to the Parkinson's Test. This simple drawing test can help detect early signs of Parkinson's
+                    disease. Please click below to start the assessment.
                 </p>
                 <a href="#" class="start-btn" id="startTestBtn">Start Test</a>
             </div>
@@ -505,9 +563,10 @@
                     Please select how you would like to take the Parkinson's assessment test
                 </p>
                 <div class="modal-buttons">
-                    <a href="/drawnSP" class="modal-btn btn-draw">
+                    <a href="/drawnSP" class="modal-btn btn-draw recommended-btn">
                         <span class="icon icon-pencil"></span>
                         Draw Test
+                        <span class="recommend-badge">Recommended</span>
                     </a>
                     <a href="/upload" class="modal-btn btn-upload">
                         <span class="icon icon-upload"></span>
@@ -523,29 +582,29 @@
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
             const colors = ['#4a90e2', '#45a049', '#9b59b6', '#3498db', '#e74c3c'];
-            
+
             for (let i = 0; i < 15; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
-                
+
                 // Random properties
                 const size = Math.random() * 20 + 5;
                 const color = colors[Math.floor(Math.random() * colors.length)];
-                
+
                 // Position
                 const posX = Math.random() * 100;
                 const posY = Math.random() * 100;
-                
+
                 // Style
                 particle.style.width = `${size}px`;
                 particle.style.height = `${size}px`;
                 particle.style.background = color;
                 particle.style.left = `${posX}%`;
                 particle.style.top = `${posY}%`;
-                
+
                 // Animation delay
                 particle.style.animationDelay = `${Math.random() * 5}s`;
-                
+
                 particlesContainer.appendChild(particle);
             }
         }
@@ -564,14 +623,14 @@
             } else {
                 // Create an array to hold all localStorage items related to test results
                 const results = [];
-                
+
                 // Extract all relevant items from localStorage
                 for (let i = 0; i < localStorage.length; i++) {
                     const key = localStorage.key(i);
                     try {
                         const storedData = localStorage.getItem(key);
                         const parsedData = JSON.parse(storedData);
-                        
+
                         // Check if this is a valid test result with required fields
                         if (parsedData && parsedData.result && parsedData.date) {
                             results.push(parsedData);
@@ -581,37 +640,37 @@
                         console.log("Skipping invalid entry in localStorage");
                     }
                 }
-                
+
                 // Sort results by date (newest first)
                 results.sort((a, b) => {
                     return new Date(b.date) - new Date(a.date);
                 });
-                
+
                 // Populate the table with sorted results
                 results.forEach((result, index) => {
                     const row = document.createElement('tr');
-                    
+
                     // Split date and time if possible
                     let dateStr = result.date;
                     let timeStr = "";
-                    
+
                     if (result.date.includes(',')) {
                         dateStr = result.date.split(',')[0];
                         timeStr = result.date.split(',')[1];
                     }
-                    
+
                     row.innerHTML = `
                         <td>${result.result}</td>
                         <td>${dateStr}</td>
                         <td>${timeStr}</td>
                     `;
-                    
+
                     // Add animation delay for each row
                     row.style.opacity = "0";
                     row.style.transform = "translateX(-20px)";
-                    
+
                     tableBody.appendChild(row);
-                    
+
                     // Animate rows with staggered timing
                     setTimeout(() => {
                         gsap.to(row, {
@@ -622,7 +681,7 @@
                         });
                     }, 100 + (index * 50));
                 });
-                
+
                 // If more than 5 rows, add subtle glow animation to the table wrapper to indicate scrollability
                 if (results.length > 5) {
                     const tableWrapper = document.querySelector('.table-wrapper');
@@ -641,11 +700,11 @@
             // Add confirmation with animation
             const clearButton = document.querySelector('.clear-button');
             clearButton.classList.add('animate__animated', 'animate__headShake');
-            
+
             if (confirm("Are you sure you want to delete all test results?")) {
                 // Animation for clearing data
                 const tableRows = document.querySelectorAll('#resultTable tbody tr');
-                
+
                 tableRows.forEach((row, index) => {
                     setTimeout(() => {
                         gsap.to(row, {
@@ -656,26 +715,26 @@
                         });
                     }, index * 50);
                 });
-                
+
                 // Wait for animation to complete before clearing localStorage
                 setTimeout(() => {
                     // Clear all items from localStorage
                     localStorage.clear();
-                    
+
                     // Show success message
                     const tableBody = document.querySelector('#resultTable tbody');
                     tableBody.innerHTML = '';
-                    
+
                     const row = document.createElement('tr');
                     row.innerHTML = `<td colspan="3" class="no-data">All data cleared successfully</td>`;
                     tableBody.appendChild(row);
-                    
+
                     gsap.from(row, {
                         opacity: 0,
                         y: -10,
                         duration: 0.5
                     });
-                    
+
                     // Remove animation class from button
                     clearButton.classList.remove('animate__animated', 'animate__headShake');
                 }, tableRows.length * 50 + 300);
@@ -692,38 +751,38 @@
             const modal = document.getElementById('testOptionsModal');
             modal.classList.add('active');
         }
-        
+
         function closeModal() {
             const modal = document.getElementById('testOptionsModal');
             modal.classList.remove('active');
         }
 
         // Set up event listeners as soon as DOM is ready
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Add event listeners for modal
-            document.getElementById('startTestBtn').addEventListener('click', function(e) {
+            document.getElementById('startTestBtn').addEventListener('click', function (e) {
                 e.preventDefault();
                 openModal();
                 console.log("Modal should be open now");
             });
-            
-            document.getElementById('closeModal').addEventListener('click', function() {
+
+            document.getElementById('closeModal').addEventListener('click', function () {
                 closeModal();
                 console.log("Modal should be closed now");
             });
-            
+
             // Close modal when clicking on backdrop
-            document.getElementById('testOptionsModal').addEventListener('click', function(e) {
+            document.getElementById('testOptionsModal').addEventListener('click', function (e) {
                 if (e.target === this) {
                     closeModal();
                     console.log("Modal closed by clicking outside");
                 }
             });
-            
+
             // Add hover effects for modal buttons and start button
             const startBtn = document.querySelector('.start-btn');
             const modalBtns = document.querySelectorAll('.modal-btn');
-            
+
             startBtn.addEventListener('mouseenter', () => {
                 gsap.to(startBtn, {
                     scale: 1.05,
@@ -731,7 +790,7 @@
                     ease: "power1.out"
                 });
             });
-            
+
             startBtn.addEventListener('mouseleave', () => {
                 gsap.to(startBtn, {
                     scale: 1,
@@ -739,7 +798,7 @@
                     ease: "power1.out"
                 });
             });
-            
+
             modalBtns.forEach(btn => {
                 btn.addEventListener('mouseenter', () => {
                     gsap.to(btn, {
@@ -748,7 +807,7 @@
                         ease: "power1.out"
                     });
                 });
-                
+
                 btn.addEventListener('mouseleave', () => {
                     gsap.to(btn, {
                         scale: 1,
@@ -760,11 +819,11 @@
         });
 
         // Page load animations 
-        window.onload = function() {
+        window.onload = function () {
             // Hide loading spinner
             setTimeout(() => {
                 document.getElementById('loading-spinner').style.display = 'none';
-                
+
                 // Fade in page content
                 gsap.to('.page-wrapper', {
                     opacity: 1,
@@ -772,7 +831,7 @@
                     duration: 0.8,
                     ease: "power2.out"
                 });
-                
+
                 // Animate header
                 gsap.to('header h1', {
                     opacity: 1,
@@ -781,7 +840,7 @@
                     delay: 0.2,
                     ease: "back.out(1.7)"
                 });
-                
+
                 // Animate start container
                 gsap.to('.start-container', {
                     opacity: 1,
@@ -790,7 +849,7 @@
                     delay: 0.4,
                     ease: "back.out(1.2)"
                 });
-                
+
                 // Animate start button
                 gsap.to('.start-btn', {
                     opacity: 1,
@@ -799,7 +858,7 @@
                     delay: 0.7,
                     ease: "power1.out"
                 });
-                
+
                 // Animate table container
                 gsap.to('.table-container', {
                     opacity: 1,
@@ -808,7 +867,7 @@
                     delay: 0.6,
                     ease: "power2.out"
                 });
-                
+
                 // Animate clear button
                 gsap.to('.clear-button', {
                     opacity: 1,
@@ -817,26 +876,26 @@
                     delay: 0.9,
                     ease: "power1.out"
                 });
-                
+
                 // Create floating particles
                 createParticles();
-                
+
                 // Display results after animations
                 setTimeout(displayResults, 800);
             }, 1000); // Simulate loading for better effect
         };
-        
+
         // Mousemove parallax effect for particles
         document.addEventListener('mousemove', (e) => {
             const particles = document.querySelectorAll('.particle');
             const mouseX = e.clientX / window.innerWidth;
             const mouseY = e.clientY / window.innerHeight;
-            
+
             particles.forEach(particle => {
                 const speed = parseFloat(particle.style.width) * 0.05;
                 const offsetX = (mouseX - 0.5) * speed;
                 const offsetY = (mouseY - 0.5) * speed;
-                
+
                 gsap.to(particle, {
                     x: offsetX,
                     y: offsetY,
@@ -847,4 +906,5 @@
         });
     </script>
 </body>
+
 </html>
