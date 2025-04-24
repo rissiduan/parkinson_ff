@@ -167,6 +167,89 @@
             top: 5px;
         }
 
+        /* Added detailed results styling */
+        .detailed-results {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease 1.7s forwards;
+        }
+
+        .result-card {
+            flex: 1;
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 0 10px;
+            box-shadow: var(--card-shadow);
+            border-top: 4px solid var(--accent-color);
+            text-align: left;
+        }
+
+        .result-card:first-child {
+            border-top-color: var(--primary-color);
+        }
+
+        .result-card-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .result-data {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .result-label {
+            font-weight: 400;
+            color: #7f8c9a;
+        }
+
+        .result-value {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e0e6f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            transition: width 1s ease;
+            width: 0;
+        }
+
+        .spiral-progress .progress-fill {
+            animation: fillProgress 1.5s ease 2s forwards;
+        }
+
+        .wave-progress .progress-fill {
+            animation: fillProgress 1.5s ease 2.2s forwards;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-color));
+        }
+
+        @keyframes fillProgress {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: var(--progress-width);
+            }
+        }
+
         @keyframes pulse {
             0% {
                 opacity: 0;
@@ -262,15 +345,19 @@
             0% {
                 transform: translateY(0) translateX(0) scale(1);
             }
+
             25% {
                 transform: translateY(-70px) translateX(40px) scale(1.1);
             }
+
             50% {
                 transform: translateY(-30px) translateX(-50px) scale(0.9);
             }
+
             75% {
                 transform: translateY(70px) translateX(30px) scale(1.05);
             }
+
             100% {
                 transform: translateY(0) translateX(0) scale(1);
             }
@@ -504,7 +591,44 @@
         <h1>ผลการวิเคราะห์</h1>
         <div class="result-container">
             <div class="result" id="result">{{ final_result }}</div>
+            <div style="margin-top: 15px; font-size: 16px; color: var(--text-color);">
+                ความมั่นใจโดยรวม: <span style="font-weight: 500;">{{ overall_conf }}%</span>
+            </div>
         </div>
+
+        <!-- New detailed results section -->
+        <div class="detailed-results">
+            <div class="result-card">
+                <h3 class="result-card-title">ผลวิเคราะห์ Spiral</h3>
+                <div class="result-data">
+                    <span class="result-label">ผลลัพธ์:</span>
+                    <span class="result-value">{{ sp_result }}</span>
+                </div>
+                <div class="result-data">
+                    <span class="result-label">ความแม่นยำ:</span>
+                    <span class="result-value">{{ sp_conf }}%</span>
+                </div>
+                <div class="spiral-progress progress-bar">
+                    <div class="progress-fill" id="spiralProgress"></div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <h3 class="result-card-title">ผลวิเคราะห์ Wave</h3>
+                <div class="result-data">
+                    <span class="result-label">ผลลัพธ์:</span>
+                    <span class="result-value">{{ wave_result }}</span>
+                </div>
+                <div class="result-data">
+                    <span class="result-label">ความแม่นยำ:</span>
+                    <span class="result-value">{{ wave_conf }}%</span>
+                </div>
+                <div class="wave-progress progress-bar">
+                    <div class="progress-fill" id="waveProgress"></div>
+                </div>
+            </div>
+        </div>
+
         <div class="button-container">
             <button class="test-again-button" onclick="handleTestAgain()">กลับสู่หน้าหลัก</button>
         </div>
@@ -522,6 +646,10 @@
     <script>
         // Show loading animation
         window.addEventListener('load', function () {
+            // Set progress bar widths based on confidence scores
+            document.getElementById('spiralProgress').style.setProperty('--progress-width', '{{ sp_conf }}%');
+            document.getElementById('waveProgress').style.setProperty('--progress-width', '{{ wave_conf }}%');
+
             setTimeout(function () {
                 document.querySelector('.loading-overlay').style.opacity = '0';
                 setTimeout(function () {
@@ -602,19 +730,19 @@
             // Add animation before redirecting
             document.querySelector('.container').style.transform = 'translateY(30px)';
             document.querySelector('.container').style.opacity = '0';
-            
-            setTimeout(function() {
+
+            setTimeout(function () {
                 window.location.href = '/';
             }, 300);
         }
-        
+
         // ฟังก์ชัน Particle generator ที่ปรับปรุงแล้ว
         function createParticles() {
             const particlesContainer = document.querySelector('.particles');
             particlesContainer.innerHTML = ''; // เคลียร์ particles เดิม
-            
+
             const numParticles = 60; // เพิ่มจำนวน particles
-            
+
             // สีตามธีม
             const colors = [
                 'rgba(74, 144, 226, 0.3)', // primary-color
@@ -644,7 +772,7 @@
                 // อนิเมชั่นที่หลากหลาย
                 const duration = Math.random() * 30 + 25; // ทำให้ช้าลงเพื่อความนุ่มนวล
                 const delay = Math.random() * 15;
-                
+
                 // สร้างเส้นทางเคลื่อนที่ที่ซับซ้อนขึ้น
                 if (i % 3 === 0) {
                     particle.style.animation = `float ${duration}s infinite ease-in-out alternate-reverse`;
@@ -653,7 +781,7 @@
                 } else {
                     particle.style.animation = `float ${duration - 5}s infinite ease-in-out`;
                 }
-                
+
                 particle.style.animationDelay = `-${delay}s`; // ใช้ negative delay เพื่อให้เริ่มต้นที่จุดต่างกัน
 
 
@@ -662,9 +790,9 @@
         }
 
         // เรียกใช้ฟังก์ชัน createParticles เมื่อโหลดหน้าเว็บ
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             createParticles();
-            
+
             // อัปเดตประวัติการทดสอบ
             updateHistoryList();
         });
@@ -672,15 +800,29 @@
         // รีเฟรช particles ทุก 1 นาที เพื่อเพิ่มความเคลื่อนไหวใหม่
         setInterval(createParticles, 60000);
 
-        // Save result function
+        // Save result function - updated to include detailed results
+        // Save result function - updated to include overall confidence
         function saveResult() {
-            // Get the result content
-            const result = document.getElementById('result').textContent;
+            // Get the results
+            const finalResult = document.getElementById('result').textContent;
+            const overallConf = "{{ overall_conf }}";
+            const spiralResult = "{{ sp_result }}";
+            const spiralConf = "{{ sp_conf }}";
+            const waveResult = "{{ wave_result }}";
+            const waveConf = "{{ wave_conf }}";
             const timestamp = new Date().toLocaleString();
 
-            // Save to localStorage
+            // Save to localStorage with all details
             const index = localStorage.length + 1;
-            localStorage.setItem(index, JSON.stringify({ result: result, date: timestamp }));
+            localStorage.setItem(index, JSON.stringify({
+                result: finalResult,
+                overallConf: overallConf,
+                spiralResult: spiralResult,
+                spiralConf: spiralConf,
+                waveResult: waveResult,
+                waveConf: waveConf,
+                date: timestamp
+            }));
 
             // Show notification instead of alert
             showNotification('บันทึกข้อมูลเรียบร้อยแล้ว');
@@ -700,7 +842,7 @@
             }, 3000);
         }
 
-        // Update history function
+        // Update history function - updated to display more details on hover
         function updateHistoryList() {
             const historyList = document.getElementById('historyList');
             const history = Object.entries(localStorage).map(([_, value]) => JSON.parse(value));
@@ -719,6 +861,15 @@
                 // Add animation delay for cascading effect
                 historyItem.style.opacity = '0';
                 historyItem.style.animation = `fadeIn 0.3s ease ${0.1 * index}s forwards`;
+
+                // Add detailed tooltip data
+                const tooltipContent = `Spiral: ${item.spiralResult || "N/A"} (${item.spiralConf || "0"}%)<br>Wave: ${item.waveResult || "N/A"} (${item.waveConf || "0"}%)`;
+                historyItem.setAttribute('title', tooltipContent);
+                historyItem.setAttribute('data-toggle', 'tooltip');
+                historyItem.setAttribute('title', tooltipContent);
+                historyItem.setAttribute('data-toggle', 'tooltip');
+                historyItem.setAttribute('data-html', 'true');
+                historyItem.setAttribute('title', tooltipContent);
 
                 historyItem.innerHTML = `
                     <div class="history-result">${item.result}</div>
@@ -759,4 +910,5 @@
         };
     </script>
 </body>
+
 </html>

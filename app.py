@@ -261,20 +261,36 @@ def get_results():
     weight_sp = 0.48
     weight_wave = 0.52
     confidence_threshold = 0.6
-
+    
+    # Calculate overall confidence
+    overall_conf = 0
+    
     if sp_conf == 0 and wave_conf == 0:
         final_result = "No result available"
     elif sp_conf >= confidence_threshold and wave_conf >= confidence_threshold:
         weighted_score = weight_sp * sp_conf + weight_wave * wave_conf
+        overall_conf = weighted_score  # Use the weighted score as overall confidence
+        
         if sp_result == wave_result:
             final_result = sp_result
         else:
             final_result = "Parkinson" if weighted_score > 0.5 else "Healthy"
     else:
-        final_result = sp_result if sp_conf > wave_conf else wave_result
+        # If one test is more confident than the other, use its confidence
+        if sp_conf > wave_conf:
+            final_result = sp_result
+            overall_conf = sp_conf
+        else:
+            final_result = wave_result
+            overall_conf = wave_conf
 
-    return render_template("result.html", final_result=final_result)
-
+    return render_template("result.html", 
+                          final_result=final_result,
+                          overall_conf=round(overall_conf * 100, 2),  # Add overall confidence
+                          sp_result=sp_result,
+                          sp_conf=round(sp_conf * 100, 2),
+                          wave_result=wave_result,
+                          wave_conf=round(wave_conf * 100, 2))
 # ---------- Run ----------
 if __name__ == "__main__":
     app.run(debug=True)
