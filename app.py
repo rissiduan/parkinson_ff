@@ -106,7 +106,7 @@ def sp_check():
         image_data = base64.b64decode(data['image'].split(',')[1])
         image = Image.open(BytesIO(image_data))
 
-        model_path_sp = os.environ.get('MODEL_PATH_SVM_SP', 'model/model_check/svm_model_sp_check-new.pkl')
+        model_path_sp = os.environ.get('MODEL_PATH_SVM_SP', 'model/model_check/svm_model_sp_check-new2.pkl')
         if not os.path.exists(model_path_sp):
             raise FileNotFoundError(f"Model file not found at {model_path_sp}")
 
@@ -150,7 +150,7 @@ def sp_upload():
         image_data = base64.b64decode(data['image'].split(',')[1])
         image = Image.open(BytesIO(image_data))
 
-        model_path = 'model/svm_spiral_model_ff4-new.pkl'
+        model_path = 'model/svm_spiral_model_ff4-2.pkl'
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"Model not found at {model_path}")
 
