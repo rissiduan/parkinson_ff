@@ -255,34 +255,45 @@ def final_wave():
 # ---------- Combined Result ----------
 @app.route('/results', methods=['GET'])
 def get_results():
-    sp_result, sp_prob = session.get('sp_result', ('No result', 0))
-    wave_result, wave_prob = session.get('wave_result', ('No result', 0))
+    # ดึงผลลัพธ์จาก session (บันทึกจากการทำนายก่อนหน้า)
+    sp_result, sp_prob = session.get('sp_result', ('No result', 0.0))
+    wave_result, wave_prob = session.get('wave_result', ('No result', 0.0))
 
-    weight_sp = 0.48
-    weight_wave = 0.52
-    
-    # ปรับค่าความน่าจะเป็นให้สัมพันธ์กับผลลัพธ์จริง
+    # สเต็ป 1: แปลง prob ให้เป็น "โอกาสที่จะเป็น Parkinson" เท่านั้น
     sp_parkinson_prob = sp_prob if sp_result == "Parkinson" else 1 - sp_prob
     wave_parkinson_prob = wave_prob if wave_result == "Parkinson" else 1 - wave_prob
-    
-    # คำนวณโอกาสเป็น Parkinson แบบถ่วงน้ำหนัก
+
+    # สเต็ป 2: ปรับน้ำหนักตามความน่าเชื่อถือของแต่ละโมเดล
+    # ให้ Spiral มี accuracy 95.64% → 0.9564
+    # ให้ Wave มี accuracy 94.29% → 0.9429
+    acc_sp = 0.9564
+    acc_wave = 0.9429
+
+    total_acc = acc_sp + acc_wave
+    weight_sp = acc_sp / total_acc
+    weight_wave = acc_wave / total_acc
+
+    # สเต็ป 3: คำนวณ weighted probability แบบ Soft Voting
     weighted_probability = (weight_sp * sp_parkinson_prob) + (weight_wave * wave_parkinson_prob)
 
-    # กำหนดผลลัพธ์ตาม threshold
-    if weighted_probability >= 0.5:
-        final_result = "Parkinson"
-    else:
-        final_result = "Healthy"
-    
-    print(f"SP Result: {sp_result} (prob: {sp_prob}), WAVE Result: {wave_result} (prob: {wave_prob}), Weighted Probability: {weighted_probability}")
+    # สเต็ป 4: ตัดสินผลลัพธ์
+    threshold = 0.5
+    final_result = "Parkinson" if weighted_probability >= threshold else "Healthy"
 
-    return render_template("result.html", 
-                          final_result=final_result,
-                          overall_conf=round(weighted_probability * 100, 2),  # โอกาสที่จะเป็น Parkinson
-                          sp_result=sp_result,
-                          sp_conf=round(sp_prob * 100, 2),
-                          wave_result=wave_result,
-                          wave_conf=round(wave_prob * 100, 2))
+    # สำหรับ debug และดูค่าทั้งหมด
+    print("Spiral model: result =", sp_result, ", raw prob =", sp_prob, ", Parkinson prob =", sp_parkinson_prob)
+    print("Wave model: result =", wave_result, ", raw prob =", wave_prob, ", Parkinson prob =", wave_parkinson_prob)
+    print(f"Weighted probability: {weighted_probability:.4f} → Final result: {final_result}")
+
+    # สเต็ป 5: ส่งผลลัพธ์ไปยังหน้าเว็บ
+    return render_template("result.html",
+                           final_result=final_result,
+                           overall_conf=round(weighted_probability * 100, 2),
+                           sp_result=sp_result,
+                           sp_conf=round(sp_prob * 100, 2),
+                           wave_result=wave_result,
+                           wave_conf=round(wave_prob * 100, 2))
+
 
 
 # ---------- Run ----------
