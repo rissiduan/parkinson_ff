@@ -191,29 +191,43 @@ def wave_upload():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
 
-# ---------- Final Spiral ----------
+# ---------- Draw Spiral ----------
 @app.route('/sp', methods=['POST'])
 def final_spiral():
     try:
+        print("📥 [SPIRAL] Received request")
         data = request.get_json()
         image_data = base64.b64decode(data['image'].split(',')[1])
         image = Image.open(BytesIO(image_data))
+        print("🖼️ [SPIRAL] Image decoded successfully")
 
-        model_path = 'model/model_sprial_SVM_new.pkl'
+        model_path = os.path.join('model', 'model_sprial_SVM_new.pkl')
+        print(f"🔍 [SPIRAL] Model path: {model_path}")
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"Model file not found at {model_path}")
 
-        model = joblib.load(open(model_path, 'rb'))
-        features = extract_flattened_features(image).reshape(1, -1)
-        prediction = model.predict(features)
-        confidence = model.predict_proba(features)[0].max() if hasattr(model, 'predict_proba') else 1.0
-        result = "Healthy" if prediction[0] == 0 else "Parkinson"
+        with open(model_path, 'rb') as f:
+            model = joblib.load(f)
+        print("✅ [SPIRAL] Model loaded successfully")
 
+        features = extract_flattened_features(image).reshape(1, -1)
+        print("📊 [SPIRAL] Features extracted")
+
+        prediction = model.predict(features)
+        print(f"🧠 [SPIRAL] Raw prediction output: {prediction}")
+
+        result = "Healthy" if prediction[0] == 0 else "Parkinson"
+        confidence = model.predict_proba(features)[0].max() if hasattr(model, 'predict_proba') else 1.0
+        print(f"✅ [SPIRAL] Prediction result: {result} (Confidence: {confidence*100:.2f}%)")
+
+        session['sp_result'] = (result, confidence)
         return jsonify({'status': 'success', 'result': result, 'confidence': float(confidence)})
     except Exception as e:
+        print(f"❌ [SPIRAL] Error occurred: {str(e)}")
         return jsonify({'status': 'error', 'message': str(e)})
 
-# ---------- Final Wave ----------
+
+# ---------- Draw Wave ----------
 @app.route('/Wave', methods=['POST'])
 def final_wave():
     try:
