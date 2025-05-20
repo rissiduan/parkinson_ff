@@ -393,7 +393,7 @@
             animation: fadeIn 0.8s ease forwards 0.6s;
         }
 
-        /* Loading progress bar */
+        /* Loading */
         .progress-overlay {
             position: fixed;
             top: 0;
@@ -465,7 +465,7 @@
             animation: pulse 1.5s infinite;
         }
 
-        /* Custom Alert Styles */
+
         .alert-modal {
             position: fixed;
             top: 0;
@@ -651,7 +651,7 @@
         <p>การทดสอบการวาดภาพนี้ใช้เพื่อช่วยในการประเมินการควบคุมการเคลื่อนไหวและการประสานงานของกล้ามเนื้อ</p>
     </div>
 
-    <!-- Progress overlay -->
+  
     <div class="progress-overlay" id="progressOverlay">
         <div class="progress-container">
             <div class="upload-icon">
@@ -665,7 +665,7 @@
         </div>
     </div>
 
-    <!-- Custom Alert Modal -->
+
     <div class="alert-modal" id="alertModal">
         <div class="alert-container">
             <div class="alert-icon">
@@ -684,19 +684,19 @@
         let lastX = 0;
         let lastY = 0;
 
-        // Template canvas for spiral
+    
         const templateCanvas = document.createElement('canvas');
         templateCanvas.width = canvas.width;
         templateCanvas.height = canvas.height;
         const templateCtx = templateCanvas.getContext('2d');
 
-        // Drawing canvas for user input
+      
         const drawingCanvas = document.createElement('canvas');
         drawingCanvas.width = canvas.width;
         drawingCanvas.height = canvas.height;
         const drawingCtx = drawingCanvas.getContext('2d');
 
-        // Function to show custom alert
+  
         function showCustomAlert(title, message) {
             const alertModal = document.getElementById('alertModal');
             const alertTitle = document.getElementById('alertTitle');
@@ -836,7 +836,7 @@
 
         function clearCanvas() {
             initCanvas();
-            // Add visual feedback when clearing
+          
             const canvasContainer = document.querySelector('.canvas-container');
             canvasContainer.style.animation = 'pulse 0.3s ease';
             setTimeout(() => {
@@ -845,53 +845,48 @@
         }
 
         function nextTest() {
-            // Get image data from the drawing canvas
             const imageData = drawingCtx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height);
             const pixels = imageData.data;
             let isDrawing = false;
 
-            // Check if any pixel is not the initial white color (255, 255, 255)
+          
             for (let i = 0; i < pixels.length; i += 4) {
-                // Check if the pixel is not white (255, 255, 255)
-                // Also check alpha channel - if alpha is not 255 (fully opaque),
-                // then something has been drawn with transparency
                 if (pixels[i] !== 255 || pixels[i + 1] !== 255 || pixels[i + 2] !== 255 || pixels[i + 3] !== 255) {
                     isDrawing = true;
                     break;
                 }
             }
 
-            // If no drawing was detected, show a custom alert and stop execution
+         
             if (!isDrawing) {
                 showCustomAlert("กรุณาวาดภาพ", "คุณจำเป็นต้องวาดภาพเส้นตามเส้นประก่อนดำเนินการต่อ");
-                return;  // Stop further actions if no drawing was detected
+                return;  
             }
 
-            // Proceed with the original logic for sending the image if drawing was detected
+         
             const progressOverlay = document.getElementById('progressOverlay');
             const progressFill = document.getElementById('progressFill');
             const uploadStatus = document.getElementById('uploadStatus');
 
             progressOverlay.style.display = 'flex';
 
-            // Animate progress bar
+   
             progressFill.style.width = '0%';
             progressFill.style.animation = 'progress 0.3s linear forwards';
 
-            // Create a new canvas for the final image
+
             const exportCanvas = document.createElement('canvas');
             exportCanvas.width = canvas.width;
             exportCanvas.height = canvas.height;
             const exportCtx = exportCanvas.getContext('2d');
 
-            // Fill with white background
             exportCtx.fillStyle = 'white';
             exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
 
-            // Draw the user's drawing on top
+
             exportCtx.drawImage(drawingCanvas, 0, 0);
 
-            // Double-check if the exported image contains a drawing
+
             const exportedImageData = exportCtx.getImageData(0, 0, exportCanvas.width, exportCanvas.height);
             const exportedPixels = exportedImageData.data;
             let hasDrawingInExport = false;
@@ -909,13 +904,8 @@
                 return;
             }
 
-            // Convert the canvas to a Base64 encoded image (PNG)
             const dataURL = exportCanvas.toDataURL('image/png');
-
-            // Prepare data to be sent to the server as JSON
             const data = { image: dataURL };
-
-            // Send the image data to the server using fetch API
             uploadStatus.textContent = "กำลังประมวลผลรูปวาด...";
 
             fetch('/sp', {
@@ -926,16 +916,13 @@
                 .then(response => {
                     if (response.ok) {
                         uploadStatus.textContent = "การส่งสำเร็จ! กำลังนำคุณไปยังหน้าถัดไป...";
-                        // Make sure the progress bar reaches 100% 
                         progressFill.style.width = '100%';
-                        // Redirect after a slight delay to show completion
                         setTimeout(() => {
                             window.location.replace('/drawnWave');
                         }, 500);
                     } else {
                         uploadStatus.textContent = 'เกิดข้อผิดพลาดที่เซิร์ฟเวอร์: ' + response.statusText;
                         progressFill.style.backgroundColor = 'var(--danger-color)';
-                        // Allow user to dismiss the overlay after error
                         setTimeout(() => {
                             progressOverlay.addEventListener('click', function hideOverlay() {
                                 progressOverlay.style.display = 'none';
@@ -948,7 +935,6 @@
                 .catch(error => {
                     uploadStatus.textContent = 'เกิดข้อผิดพลาด: ' + error;
                     progressFill.style.backgroundColor = 'var(--danger-color)';
-                    // Allow user to dismiss the overlay after error
                     setTimeout(() => {
                         progressOverlay.addEventListener('click', function hideOverlay() {
                             progressOverlay.style.display = 'none';
@@ -959,7 +945,6 @@
                 });
         }
 
-        // Event listeners
         canvas.addEventListener('mousedown', startPath);
         canvas.addEventListener('mousemove', draw);
         canvas.addEventListener('mouseup', endPath);
@@ -974,7 +959,6 @@
             e.preventDefault();
         });
 
-        // Add button animation on hover
         document.querySelectorAll('.button').forEach(button => {
             button.addEventListener('mouseover', function () {
                 this.style.transform = 'translateY(-2px)';
@@ -984,7 +968,6 @@
             });
         });
 
-        // Initialize the canvas on page load
         initCanvas();
     </script>
 </body>

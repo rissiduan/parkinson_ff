@@ -339,7 +339,7 @@
             transform: none;
         }
 
-        /* Modal styles */
+
         .warning-modal {
             position: fixed;
             top: 0;
@@ -415,7 +415,7 @@
         }
 
 
-        /* เพิ่มเส้นใต้เล็กๆ สีสันสวยงาม */
+
         .warning-title::after {
             content: '';
             position: absolute;
@@ -427,7 +427,7 @@
             background-color: #3498db;
         }
 
-        /* Loading overlay */
+        /* Loading  */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -477,7 +477,7 @@
             }
         }
 
-        /* Alert styles */
+      
         .alert {
             position: fixed;
             top: 20px;
@@ -518,7 +518,7 @@
             color: #555;
         }
 
-        /* Responsive adjustments */
+   
         @media (max-width: 768px) {
             .upload-area-wrapper {
                 flex-direction: column;
@@ -557,7 +557,6 @@
                 </p>
 
                 <div class="upload-area-wrapper">
-                    <!-- Spiral upload area -->
                     <div class="upload-area">
                         <label class="upload-label">รูปก้นหอย</label>
                         <div class="upload-box" id="spiralUploadBox">
@@ -571,7 +570,6 @@
                         </div>
                     </div>
 
-                    <!-- Wave upload area -->
                     <div class="upload-area">
                         <label class="upload-label">รูปคลื่น</label>
                         <div class="upload-box" id="waveUploadBox">
@@ -594,7 +592,7 @@
         </main>
     </div>
 
-    <!-- Warning Modal -->
+
     <div class="warning-modal" id="warningModal">
         <div class="warning-modal-content">
             <h2 class="warning-title">รูปแบบภาพที่ถูกต้อง</h2>
@@ -605,44 +603,43 @@
         </div>
     </div>
 
-    <!-- Loading Overlay -->
+
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
         <p class="loading-text">กำลังประมวลผลภาพ กรุณารอสักครู่...</p>
     </div>
 
-    <!-- Alert -->
+
     <div class="alert" id="alert">
         <div class="alert-icon" id="alertIcon">!</div>
         <p class="alert-text" id="alertText"></p>
     </div>
 
     <script>
-        // Variables to store uploaded images
+
         let spiralImage = null;
         let waveImage = null;
 
-        // Function to show alert
+
         function showAlert(message, type = 'error') {
             const alert = document.getElementById('alert');
             const alertIcon = document.getElementById('alertIcon');
             const alertText = document.getElementById('alertText');
 
-            // Set message and icon
+
             alertText.textContent = message;
             alertIcon.textContent = type === 'error' ? '!' : '✓';
             alertIcon.className = `alert-icon ${type}`;
 
-            // Show alert
+     
             alert.classList.add('show');
 
-            // Hide alert after 5 seconds
+
             setTimeout(() => {
                 alert.classList.remove('show');
             }, 5000);
         }
 
-        // Function to handle file upload
         function handleFileUpload(file, previewId, overlayId, boxId, type) {
             if (!file || !file.type.startsWith('image/')) {
                 showAlert('Please upload a valid image file.');
@@ -660,17 +657,17 @@
                 preview.classList.add('show');
                 overlay.style.display = 'flex';
 
-                // Store image data
+ 
                 if (type === 'spiral') {
                     spiralImage = e.target.result;
                 } else {
                     waveImage = e.target.result;
                 }
 
-                // Enable test button if both images are uploaded
+     
                 checkTestButtonStatus();
 
-                // Remove animation for image appearance
+       
                 preview.style.opacity = 1;
                 preview.style.transform = 'scale(1)';
             };
@@ -679,7 +676,7 @@
             return file;
         }
 
-        // Function to check if test button should be enabled
+
         function checkTestButtonStatus() {
             const testButton = document.getElementById('testButton');
             testButton.disabled = !(spiralImage && waveImage);
@@ -691,7 +688,7 @@
             }
         }
 
-        // Function to mark upload box as invalid
+
         function markAsInvalid(boxId) {
             const box = document.getElementById(boxId);
             box.classList.add('invalid');
@@ -701,7 +698,7 @@
             }, 1000);
         }
 
-        // Function to perform test
+
         function performTest() {
             const loadingOverlay = document.getElementById('loadingOverlay');
             loadingOverlay.classList.add('active');
@@ -791,10 +788,9 @@
                 });
         }
 
-        // และเพิ่ม event listener สำหรับปุ่ม Test Button
         document.addEventListener('DOMContentLoaded', function () {
 
-            // Test button event
+ 
             const testButton = document.getElementById('testButton');
             testButton.addEventListener('click', function () {
                 if (!testButton.disabled) {
@@ -802,35 +798,34 @@
                 }
             });
         });
-        // Document ready
+
         document.addEventListener('DOMContentLoaded', function () {
-            // Back button event
+
             document.getElementById('backButton').addEventListener('click', function () {
                 window.location.href = '/';
             });
 
-            // Show warning modal on page load
-            const warningImage = document.getElementById('warningImage');
-            // กำหนดสไตล์เพื่อให้ภาพอยู่ตรงกลางและมีขนาดใหญ่ขึ้น
-            warningImage.style.maxWidth = '95%'; // เพิ่มความกว้างสูงสุดจาก 90% เป็น 95%
-            warningImage.style.maxHeight = '85vh'; // เพิ่มความสูงสูงสุด
-            warningImage.style.objectFit = 'contain'; // คงอัตราส่วนภาพ
-            warningImage.style.display = 'block'; // ทำให้เป็น block element
-            warningImage.style.margin = '0 auto'; // จัดให้อยู่ตรงกลางแนวนอน
-            warningImage.style.position = 'relative'; // กำหนด position เป็น relative
-            warningImage.style.left = '0'; // ยกเลิกการเอียงไปทางซ้าย
 
-            // ปรับ modal container ให้จัดตำแหน่งภาพอยู่ตรงกลาง
+            const warningImage = document.getElementById('warningImage');
+
+            warningImage.style.maxWidth = '95%'; 
+            warningImage.style.maxHeight = '85vh'; 
+            warningImage.style.objectFit = 'contain'; 
+            warningImage.style.display = 'block'; 
+            warningImage.style.margin = '0 auto'; 
+            warningImage.style.position = 'relative'; 
+            warningImage.style.left = '0'; 
+
             document.getElementById('warningModal').style.textAlign = 'center';
             document.getElementById('warningModal').style.display = 'flex';
             document.getElementById('warningModal').style.flexDirection = 'column';
             document.getElementById('warningModal').style.alignItems = 'center';
             document.getElementById('warningModal').style.justifyContent = 'center';
 
-            // Fixed image path - แก้ไขส่วนนี้ - อย่าประกาศ warningImage ซ้ำ
+         
             warningImage.onerror = function () {
                 console.error('Failed to load image');
-                // ทดลองใช้ Data URL แทน
+       
                 const canvas = document.createElement('canvas');
                 canvas.width = 400;
                 canvas.height = 300;
@@ -844,7 +839,7 @@
                 warningImage.src = canvas.toDataURL();
             };
 
-            // พยายามโหลดรูปภาพจากหลายๆเส้นทาง
+    
             const paths = [
                 '/static/i.png',
                 '/get-image',
@@ -875,18 +870,18 @@
 
             document.getElementById('warningModal').classList.add('active');
 
-            // Close warning modal
+  
             document.getElementById('warningClose').addEventListener('click', function () {
                 document.getElementById('warningModal').classList.remove('active');
             });
 
-            // Spiral upload events
+     
             const spiralInput = document.getElementById('spiralInput');
             const spiralBox = document.getElementById('spiralUploadBox');
 
-            // Fix for click to upload
+          
             spiralBox.addEventListener('click', function (e) {
-                // Prevent click if we're clicking the remove button
+                
                 if (e.target.id !== 'removeSpiral' && !e.target.closest('#removeSpiral')) {
                     spiralInput.click();
                 }
@@ -898,13 +893,13 @@
                 }
             });
 
-            // Wave upload events
+            
             const waveInput = document.getElementById('waveInput');
             const waveBox = document.getElementById('waveUploadBox');
 
-            // Fix for click to upload
+       
             waveBox.addEventListener('click', function (e) {
-                // Prevent click if we're clicking the remove button
+                
                 if (e.target.id !== 'removeWave' && !e.target.closest('#removeWave')) {
                     waveInput.click();
                 }
@@ -916,7 +911,6 @@
                 }
             });
 
-            // Drag and drop for spiral
             spiralBox.addEventListener('dragover', function (e) {
                 e.preventDefault();
                 this.classList.add('highlight');
@@ -935,7 +929,7 @@
                 }
             });
 
-            // Drag and drop for wave
+         
             waveBox.addEventListener('dragover', function (e) {
                 e.preventDefault();
                 this.classList.add('highlight');
@@ -955,60 +949,59 @@
             });
         });
 
-        // Fixed remove button events
+     
         const removeSpiral = document.getElementById('removeSpiral');
         removeSpiral.addEventListener('click', function (e) {
             e.preventDefault();
-            e.stopPropagation(); // Prevent event bubbling
+            e.stopPropagation(); 
 
-            // Reset the preview
             const preview = document.getElementById('spiralPreview');
             preview.classList.remove('show');
             preview.src = '';
 
-            // Hide overlay
+      
             document.getElementById('spiralOverlay').style.display = 'none';
 
-            // Reset input
+       
             document.getElementById('spiralInput').value = '';
 
-            // Reset border
+        
             const box = document.getElementById('spiralUploadBox');
             box.style.borderColor = 'var(--primary-color)';
             box.classList.remove('invalid');
 
-            // Reset image data
+         
             spiralImage = null;
 
-            // Update button status
+       
             checkTestButtonStatus();
         });
 
         const removeWave = document.getElementById('removeWave');
         removeWave.addEventListener('click', function (e) {
             e.preventDefault();
-            e.stopPropagation(); // Prevent event bubbling
+            e.stopPropagation(); 
 
-            // Reset the preview
+          
             const preview = document.getElementById('wavePreview');
             preview.classList.remove('show');
             preview.src = '';
 
-            // Hide overlay
+          
             document.getElementById('waveOverlay').style.display = 'none';
 
-            // Reset input
+       
             document.getElementById('waveInput').value = '';
 
-            // Reset border
+            
             const box = document.getElementById('waveUploadBox');
             box.style.borderColor = 'var(--primary-color)';
             box.classList.remove('invalid');
 
-            // Reset image data
+         
             waveImage = null;
 
-            // Update button status
+         
             checkTestButtonStatus();
         });
 

@@ -526,7 +526,6 @@
                 <a href="#" class="start-btn" id="startTestBtn">เริ่มทดสอบ</a>
             </div>
 
-            <!-- Table container with title -->
             <div class="table-container">
                 <h2 class="table-title">ผลการทดสอบก่อนหน้า</h2>
                 <div class="table-wrapper">
@@ -539,18 +538,16 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Data rows will be inserted here -->
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Clear LocalStorage button -->
                 <button class="clear-button" onclick="clearLocalStorage()">ลบข้อมูลทั้งหมด</button>
             </div>
         </main>
     </div>
 
-    <!-- Modal Overlay -->
+
     <div class="modal-overlay" id="testOptionsModal">
         <div class="modal-container">
             <div class="modal-header">
@@ -576,7 +573,7 @@
     </div>
 
     <script>
-        // Create animated particles
+
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
             const colors = ['#4a90e2', '#45a049', '#9b59b6', '#3498db', '#e74c3c'];
@@ -585,70 +582,65 @@
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
 
-                // Random properties
                 const size = Math.random() * 20 + 5;
                 const color = colors[Math.floor(Math.random() * colors.length)];
 
-                // Position
                 const posX = Math.random() * 100;
-                const posY = Math.random() * 100;
 
-                // Style
                 particle.style.width = `${size}px`;
                 particle.style.height = `${size}px`;
                 particle.style.background = color;
                 particle.style.left = `${posX}%`;
                 particle.style.top = `${posY}%`;
 
-                // Animation delay
                 particle.style.animationDelay = `${Math.random() * 5}s`;
 
                 particlesContainer.appendChild(particle);
             }
         }
 
-        // Function to display data from localStorage in the table
+
         function displayResults() {
             const tableBody = document.querySelector('#resultTable tbody');
-            tableBody.innerHTML = ''; // Clear the table body before inserting new rows
+            tableBody.innerHTML = ''; 
 
-            // Check if there is any data in localStorage
+  
             if (localStorage.length === 0) {
-                // If no data, display a message in the table
+            
                 const row = document.createElement('tr');
-                row.innerHTML = `<td colspan="3" class="no-data">No test results found</td>`; // Show message in all columns
+                row.innerHTML = `<td colspan="3" class="no-data">No test results found</td>`; 
                 tableBody.appendChild(row);
             } else {
-                // Create an array to hold all localStorage items related to test results
+    
                 const results = [];
 
-                // Extract all relevant items from localStorage
+             
                 for (let i = 0; i < localStorage.length; i++) {
                     const key = localStorage.key(i);
                     try {
                         const storedData = localStorage.getItem(key);
                         const parsedData = JSON.parse(storedData);
 
-                        // Check if this is a valid test result with required fields
+                      
                         if (parsedData && parsedData.result && parsedData.date) {
                             results.push(parsedData);
                         }
                     } catch (e) {
-                        // Skip invalid JSON entries
+                 
                         console.log("Skipping invalid entry in localStorage");
                     }
                 }
 
-                // Sort results by date (newest first)
+           
                 results.sort((a, b) => {
                     return new Date(b.date) - new Date(a.date);
                 });
 
-                // Populate the table with sorted results
+        
                 results.forEach((result, index) => {
                     const row = document.createElement('tr');
 
-                    // Split date and time if possible
+         
                     let dateStr = result.date;
                     let timeStr = "";
 
@@ -663,13 +655,13 @@
                         <td>${timeStr}</td>
                     `;
 
-                    // Add animation delay for each row
+         
                     row.style.opacity = "0";
                     row.style.transform = "translateX(-20px)";
 
                     tableBody.appendChild(row);
 
-                    // Animate rows with staggered timing
+           
                     setTimeout(() => {
                         gsap.to(row, {
                             opacity: 1,
@@ -680,7 +672,7 @@
                     }, 100 + (index * 50));
                 });
 
-                // If more than 5 rows, add subtle glow animation to the table wrapper to indicate scrollability
+          
                 if (results.length > 5) {
                     const tableWrapper = document.querySelector('.table-wrapper');
                     gsap.to(tableWrapper, {
@@ -693,14 +685,14 @@
             }
         }
 
-        // Function to clear localStorage and update the table
+
         function clearLocalStorage() {
-            // Add confirmation with animation
+    
             const clearButton = document.querySelector('.clear-button');
             clearButton.classList.add('animate__animated', 'animate__headShake');
 
             if (confirm("Are you sure you want to delete all test results?")) {
-                // Animation for clearing data
+
                 const tableRows = document.querySelectorAll('#resultTable tbody tr');
 
                 tableRows.forEach((row, index) => {
@@ -714,12 +706,11 @@
                     }, index * 50);
                 });
 
-                // Wait for animation to complete before clearing localStorage
+       
                 setTimeout(() => {
-                    // Clear all items from localStorage
                     localStorage.clear();
 
-                    // Show success message
+        
                     const tableBody = document.querySelector('#resultTable tbody');
                     tableBody.innerHTML = '';
 
@@ -733,18 +724,16 @@
                         duration: 0.5
                     });
 
-                    // Remove animation class from button
+
                     clearButton.classList.remove('animate__animated', 'animate__headShake');
                 }, tableRows.length * 50 + 300);
             } else {
-                // Remove animation class if cancelled
+
                 setTimeout(() => {
                     clearButton.classList.remove('animate__animated', 'animate__headShake');
                 }, 1000);
             }
         }
-
-        // Modal functions
         function openModal() {
             const modal = document.getElementById('testOptionsModal');
             modal.classList.add('active');
@@ -755,9 +744,9 @@
             modal.classList.remove('active');
         }
 
-        // Set up event listeners as soon as DOM is ready
+
         document.addEventListener('DOMContentLoaded', function () {
-            // Add event listeners for modal
+
             document.getElementById('startTestBtn').addEventListener('click', function (e) {
                 e.preventDefault();
                 openModal();
@@ -769,7 +758,6 @@
                 console.log("Modal should be closed now");
             });
 
-            // Close modal when clicking on backdrop
             document.getElementById('testOptionsModal').addEventListener('click', function (e) {
                 if (e.target === this) {
                     closeModal();
@@ -777,7 +765,7 @@
                 }
             });
 
-            // Add hover effects for modal buttons and start button
+
             const startBtn = document.querySelector('.start-btn');
             const modalBtns = document.querySelectorAll('.modal-btn');
 
@@ -816,13 +804,12 @@
             });
         });
 
-        // Page load animations 
+
         window.onload = function () {
-            // Hide loading spinner
+
             setTimeout(() => {
                 document.getElementById('loading-spinner').style.display = 'none';
 
-                // Fade in page content
                 gsap.to('.page-wrapper', {
                     opacity: 1,
                     y: 0,
@@ -830,7 +817,7 @@
                     ease: "power2.out"
                 });
 
-                // Animate header
+
                 gsap.to('header h1', {
                     opacity: 1,
                     y: 0,
@@ -839,7 +826,6 @@
                     ease: "back.out(1.7)"
                 });
 
-                // Animate start container
                 gsap.to('.start-container', {
                     opacity: 1,
                     scale: 1,
@@ -848,7 +834,7 @@
                     ease: "back.out(1.2)"
                 });
 
-                // Animate start button
+
                 gsap.to('.start-btn', {
                     opacity: 1,
                     y: 0,
@@ -857,7 +843,7 @@
                     ease: "power1.out"
                 });
 
-                // Animate table container
+
                 gsap.to('.table-container', {
                     opacity: 1,
                     y: 0,
@@ -866,7 +852,7 @@
                     ease: "power2.out"
                 });
 
-                // Animate clear button
+       
                 gsap.to('.clear-button', {
                     opacity: 1,
                     y: 0,
@@ -875,15 +861,15 @@
                     ease: "power1.out"
                 });
 
-                // Create floating particles
+        
                 createParticles();
 
-                // Display results after animations
+              
                 setTimeout(displayResults, 800);
-            }, 1000); // Simulate loading for better effect
+            }, 1000); 
         };
 
-        // Mousemove parallax effect for particles
+     
         document.addEventListener('mousemove', (e) => {
             const particles = document.querySelectorAll('.particle');
             const mouseX = e.clientX / window.innerWidth;
