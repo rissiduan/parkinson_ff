@@ -617,8 +617,7 @@
     <div class="header">
         <div>
             <h1 class="page-title">Parkinson Wave Drawing Test</h1>
-            <p class="page-subtitle">This test analyzes your wave drawing patterns to assist in early detection of
-                potential movement disorders.</p>
+            <p class="page-subtitle">แบบทดสอบนี้จะวิเคราะห์รูปแบบการวาดคลื่นของคุณ เพื่อช่วยในการตรวจพบความผิดปกติของการเคลื่อนไหวในระยะเริ่มต้น</p>
         </div>
     </div>
 
@@ -629,12 +628,13 @@
             </div>
             <h2>Instructions</h2>
             <ol>
-                <li>Start from the left side of the wave.</li>
-                <li>Draw following the gray guide line.</li>
-                <li>Try to keep your line as smooth as possible.</li>
-                <li>Draw at a comfortable speed - accuracy is more important than speed.</li>
+                <li>เริ่มต้นจากด้านซ้ายของคลื่น</li> 
+                <li>วาดตามเส้นแนะแนวสีเทา</li> 
+                <li>พยายามวาดเส้นให้เรียบเนียนที่สุดเท่าที่จะทำได้</li> 
+                <li>วาดด้วยความเร็วที่สบาย ไม่ต้องรีบ ความแม่นยำสำคัญกว่าความเร็ว</li>
+
             </ol>
-            <button class="button begin-btn" onclick="startDrawing()"><i class="fas fa-play"></i> Begin Drawing</button>
+            <button class="button begin-btn" onclick="startDrawing()"><i class="fas fa-play"></i> เริ่มวาด</button>
         </div>
     </div>
 
@@ -643,13 +643,13 @@
     </div>
 
     <div class="button-container">
-        <button class="button clear-btn" onclick="clearCanvas()"><i class="fas fa-eraser"></i> Clear</button>
-        <button class="button next-btn" onclick="nextTest()"><i class="fas fa-arrow-right"></i> Next Test</button>
+        <button class="button clear-btn" onclick="clearCanvas()"><i class="fas fa-eraser"></i> ล้าง</button>
+        <button class="button next-btn" onclick="nextTest()"><i class="fas fa-arrow-right"></i> ต่อไป</button>
     </div>
 
     <div class="footer">
         <div class="footer-divider"></div>
-        <p>This drawing test is used to assist in the evaluation of motor control and coordination.</p>
+        <p>แบบทดสอบการวาดนี้ใช้เพื่อช่วยในการประเมินการควบคุมการเคลื่อนไหวและการประสานงานของร่างกายค่ะ</p>
     </div>
 
     <!-- Progress overlay -->
@@ -658,11 +658,11 @@
             <div class="upload-icon">
                 <i class="fas fa-cloud-upload-alt"></i>
             </div>
-            <h3>Sending Drawing...</h3>
+            <h3>กำลังส่งข้อมูล...</h3>
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
-            <p class="upload-text" id="uploadStatus">Please wait while your drawing is being processed...</p>
+            <p class="upload-text" id="uploadStatus">กรุณารอสักครู่ ขณะที่กำลังประมวลผลภาพวาดของคุณ...</p>
         </div>
     </div>
 

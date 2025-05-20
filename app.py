@@ -9,7 +9,6 @@ import base64
 import joblib
 from flask import send_from_directory, send_file
 from skimage.feature import hog
-from flask import session
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.secret_key = 'a_random_and_secure_string'
@@ -157,14 +156,16 @@ def sp_upload():
         model = joblib.load(open(model_path, 'rb'))
         features = extract_hog_features_from_image(image).reshape(1, -1)
         prediction = model.predict(features)
-        confidence = model.predict_proba(features)[0].max() if hasattr(model, 'predict_proba') else 1.0
-        result = "Healthy" if prediction[0] == 0 else "Parkinson"
-        from flask import session
+        predicted_class = prediction[0]
+        probs = model.predict_proba(features)[0]
+        confidence = probs[predicted_class] if hasattr(model, 'predict_proba') else 1.0
+        print(f"🧠 [SP] Raw prediction class: {predicted_class}")
+        result = "Healthy" if predicted_class == 0 else "Parkinson"
 
-        session['sp_result'] = (result, confidence)  
+        session['sp_result'] = (result, confidence)
 
         print(f"📊 [SP] Features extracted: {result} {confidence}")
-        return jsonify({'status': 'success', 'result': result, 'confidence': float(confidence)})
+        return jsonify({'status': 'success', 'result': result, 'confidence': float(confidence),'predicted_class': predicted_class})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
 
@@ -183,11 +184,15 @@ def wave_upload():
         model = joblib.load(open(model_path, 'rb'))
         features = extract_hog_features_from_image(image).reshape(1, -1)
         prediction = model.predict(features)
-        confidence = model.predict_proba(features)[0].max() if hasattr(model, 'predict_proba') else 1.0
-        result = "Healthy" if prediction[0] == 0 else "Parkinson" 
+        predicted_class = prediction[0]
+        probs = model.predict_proba(features)[0]
+        confidence = probs[predicted_class] if hasattr(model, 'predict_proba') else 1.0
+        print(f"🧠 [wave] Raw prediction class: {predicted_class}")
+        result = "Healthy" if predicted_class == 0 else "Parkinson"
+
         session['wave_result'] = (result, confidence)
         print(f"📊 [WAVE] Features extracted: {result} {confidence}")
-        return jsonify({'status': 'success', 'result': result, 'confidence': float(confidence)})
+        return jsonify({'status': 'success', 'result': result, 'confidence': float(confidence),'predicted_class': predicted_class})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
 
@@ -214,18 +219,19 @@ def final_spiral():
         print("📊 [SPIRAL] Features extracted")
 
         prediction = model.predict(features)
+        predicted_class = prediction[0]
+        probs = model.predict_proba(features)[0]
+        confidence = probs[predicted_class] if hasattr(model, 'predict_proba') else 1.0
         print(f"🧠 [SPIRAL] Raw prediction output: {prediction}")
 
-        result = "Healthy" if prediction[0] == 0 else "Parkinson"
-        confidence = model.predict_proba(features)[0].max() if hasattr(model, 'predict_proba') else 1.0
+        result = "Healthy" if predicted_class == 0 else "Parkinson"
         print(f"✅ [SPIRAL] Prediction result: {result} (Confidence: {confidence*100:.2f}%)")
 
         session['sp_result'] = (result, confidence)
-        return jsonify({'status': 'success', 'result': result, 'confidence': float(confidence)})
+        return jsonify({'status': 'success', 'result': result, 'confidence': float(confidence),'predicted_class': predicted_class})
     except Exception as e:
         print(f"❌ [SPIRAL] Error occurred: {str(e)}")
         return jsonify({'status': 'error', 'message': str(e)})
-
 
 # ---------- Draw Wave ----------
 @app.route('/Wave', methods=['POST'])
@@ -250,36 +256,32 @@ def final_wave():
         print("📊 [WAVE] Features extracted")
 
         prediction = model.predict(features)
+        predicted_class = prediction[0]
+        probs = model.predict_proba(features)[0]
+        confidence = probs[predicted_class] if hasattr(model, 'predict_proba') else 1.0
         print(f"🧠 [WAVE] Raw prediction output: {prediction}")
 
-        result = "Healthy" if prediction[0] == 0 else "Parkinson"
-        confidence = model.predict_proba(features)[0].max() if hasattr(model, 'predict_proba') else 1.0
+        result = "Healthy" if predicted_class == 0 else "Parkinson"
         print(f"✅ [WAVE] Prediction result: {result} (Confidence: {confidence*100:.2f}%)")
 
         session['wave_result'] = (result, confidence)
-        return jsonify({'status': 'success', 'result': result, 'confidence': float(confidence)})
+        return jsonify({'status': 'success', 'result': result, 'confidence': float(confidence),'predicted_class': predicted_class})
     except Exception as e:
         print(f"❌ [WAVE] Error occurred: {str(e)}")
-        return jsonify({'error': str(e)})
+        return jsonify({'status': 'error', 'message': str(e)})
 
 
-
-
-
-# ---------- Combined Result ----------
 @app.route('/results', methods=['GET'])
 def get_results():
     # ดึงผลลัพธ์จาก session (บันทึกจากการทำนายก่อนหน้า)
     sp_result, sp_prob = session.get('sp_result', ('No result', 0.0))
     wave_result, wave_prob = session.get('wave_result', ('No result', 0.0))
 
-    # สเต็ป 1: แปลง prob ให้เป็น "โอกาสที่จะเป็น Parkinson" เท่านั้น
-    sp_parkinson_prob = sp_prob if sp_result == "Parkinson" else 1 - sp_prob
-    wave_parkinson_prob = wave_prob if wave_result == "Parkinson" else 1 - wave_prob
+    # สร้างตัวแปรรับ predicted_class ของ Spiral และ Wave
+    predicted_class_sp = 1 if sp_result == "Parkinson" else 0
+    predicted_class_wave = 1 if wave_result == "Parkinson" else 0
 
-    # สเต็ป 2: ปรับน้ำหนักตามความน่าเชื่อถือของแต่ละโมเดล
-    # ให้ Spiral มี accuracy 95.64% → 0.9564
-    # ให้ Wave มี accuracy 94.29% → 0.9429
+    # กำหนด accuracy ของแต่ละโมเดล (น้ำหนัก)
     acc_sp = 0.9564
     acc_wave = 0.9429
 
@@ -287,26 +289,52 @@ def get_results():
     weight_sp = acc_sp / total_acc
     weight_wave = acc_wave / total_acc
 
-    # สเต็ป 3: คำนวณ weighted probability แบบ Soft Voting
-    weighted_probability = (weight_sp * sp_parkinson_prob) + (weight_wave * wave_parkinson_prob)
+    # แปลง prob ของแต่ละโมเดล ให้เป็นความมั่นใจในผลลัพธ์ที่โมเดลเลือก
+    sp_conf_final = sp_prob if sp_result == "Parkinson" else 1 - sp_prob
+    wave_conf_final = wave_prob if wave_result == "Parkinson" else 1 - wave_prob
 
-    # สเต็ป 4: ตัดสินผลลัพธ์
+    # คำนวณ weighted confidence โดยรวม (ใช้สำหรับแสดงความมั่นใจในผลลัพธ์ที่แต่ละโมเดลเลือก)
+    weighted_confidence = (weight_sp * sp_conf_final) + (weight_wave * wave_conf_final)
+
+    # คำนวณ weighted probability ของ Parkinson (ความน่าจะเป็นที่เป็น Parkinson)
+    sp_parkinson_prob = sp_prob if sp_result == "Parkinson" else 1 - sp_prob
+    wave_parkinson_prob = wave_prob if wave_result == "Parkinson" else 1 - wave_prob
+
+    weighted_parkinson_prob = (weight_sp * sp_parkinson_prob) + (weight_wave * wave_parkinson_prob)
+
+    # กำหนด threshold เพื่อแยก Parkinson หรือ Healthy
     threshold = 0.5
-    final_result = "Parkinson" if weighted_probability >= threshold else "Healthy"
+    final_result = "Parkinson" if weighted_parkinson_prob >= threshold else "Healthy"
 
-    # สำหรับ debug และดูค่าทั้งหมด
-    print("Spiral model: result =", sp_result, ", raw prob =", sp_prob, ", Parkinson prob =", sp_parkinson_prob)
-    print("Wave model: result =", wave_result, ", raw prob =", wave_prob, ", Parkinson prob =", wave_parkinson_prob)
-    print(f"Weighted probability: {weighted_probability:.4f} → Final result: {final_result}")
+    # แก้ไขการคำนวณ overall confidence ให้สอดคล้องกับผลลัพธ์ final_result
+    if final_result == "Parkinson":
+        overall_conf = weighted_parkinson_prob
+    else:
+        overall_conf = 1 - weighted_parkinson_prob
 
-    # สเต็ป 5: ส่งผลลัพธ์ไปยังหน้าเว็บ
+    # Debug print
+    print("Spiral model: result =", sp_result, ", raw prob =", sp_prob, ", confidence final =", sp_conf_final)
+    print("Wave model: result =", wave_result, ", raw prob =", wave_prob, ", confidence final =", wave_conf_final)
+    print(f"Weighted confidence (final result): {weighted_confidence:.4f}")
+    print(f"Weighted Parkinson prob: {weighted_parkinson_prob:.4f} → Final result: {final_result}")
+    print("Overall confidence (adjusted):", overall_conf)
+    print("predicted_class_sp: ", predicted_class_sp)
+    print("predicted_class_wave: ", predicted_class_wave)
+
+    # ส่งผลลัพธ์ไปยังหน้าเว็บ พร้อมแสดงความมั่นใจในผลลัพธ์สุดท้าย
     return render_template("result.html",
-                           final_result=final_result,
-                           overall_conf=round(weighted_probability * 100, 2),
-                           sp_result=sp_result,
-                           sp_conf=round(sp_prob * 100, 2),
-                           wave_result=wave_result,
-                           wave_conf=round(wave_prob * 100, 2))
+        final_result=final_result,
+        overall_conf=round(overall_conf * 100, 2),  # แสดงความมั่นใจใน final result แบบถูกต้อง
+        sp_result=sp_result,
+        sp_conf=round(sp_prob * 100, 2),
+        wave_result=wave_result,
+        wave_conf=round(wave_prob * 100, 2),
+        sp_prob=sp_prob,
+        wave_prob=wave_prob,
+        predicted_class_sp=predicted_class_sp,
+        predicted_class_wave=predicted_class_wave,
+    )
+
 
 
 

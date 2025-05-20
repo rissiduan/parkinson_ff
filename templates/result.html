@@ -7,7 +7,6 @@
     <title>Prediction Result</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        
         :root {
             --primary-color: #4a90e2;
             --secondary-color: #45a049;
@@ -393,7 +392,9 @@
         }
 
         .history-list {
-            max-height: 250px;
+            max-height: 600px;
+            max-width: 1500px;
+            margin: 0 auto;
             overflow-y: auto;
             background-color: white;
             border-radius: 12px;
@@ -582,6 +583,172 @@
             /* สีที่ใช้เมื่อเป็น Healthy */
         }
 
+        /* เพิ่ม CSS สำหรับไอคอนและ Modal */
+        .info-icon {
+            cursor: pointer;
+            color: var(--primary-color);
+            margin-left: 8px;
+            font-size: 16px;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+            vertical-align: middle;
+        }
+
+        .info-icon:hover {
+            opacity: 1;
+            transform: scale(1.2);
+            color: var(--accent-color);
+        }
+
+        /* Modal Styles */
+
+        .info-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: rgba(43, 43, 43, 0.5);
+            animation: fadeIn 0.3s ease;
+            backdrop-filter: blur(3px);
+        }
+
+        .info-modal-content {
+            background: white;
+            margin: 15vh auto;
+            padding: 25px;
+            width: 90%;
+            max-width: 700px;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            animation: slideDown 0.4s ease;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            color: #aaa;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .close-modal:hover {
+            color: var(--primary-color);
+        }
+
+        #modalTitle {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f5f5f5;
+        }
+
+        .modal-detail-content {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .formula-box {
+            background: #f9f9f9;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 15px;
+            overflow-x: auto;
+        }
+
+        .calculation-steps {
+            counter-reset: step;
+            padding-left: 15px;
+        }
+
+        .calculation-step {
+            margin-bottom: 15px;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .calculation-step::before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background-color: var(--primary-color);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .value-highlight {
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            text-align: right;
+        }
+
+        .close-btn {
+            padding: 8px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background-color: #3a80d2;
+        }
+
+        .diagram-box {
+            margin: 20px 0;
+            padding: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -602,67 +769,278 @@
     </div>
 
     <div class="result-container">
-        <div class="result" id="result">{{ final_result }}</div>
-        <div style="margin-top: 10px; font-size: 18px; font-weight: 500;"
-            class="{{ 'danger-text' if final_result == 'Parkinson' else 'safe-text' }}">
-            {% if final_result == 'Parkinson' %}
-            คุณมีความเสี่ยงที่จะเป็นโรค Parkinson {{ overall_conf }}%
-            {% else %}
-            คุณมีความปลอดภัยที่จะไม่เป็นอยู่ที่ {{ 100 - overall_conf }}%
-            {% endif %}
+    <div class="result" id="result">{{ final_result }}</div>
+    <div style="margin-top: 10px; font-size: 18px; font-weight: 500;"
+        class="{{ 'danger-text' if final_result == 'Parkinson' else 'safe-text' }}">
+        {% if final_result == 'Parkinson' %}
+        คุณมีความเสี่ยงที่จะเป็นโรค Parkinson {{ "%.2f"|format(overall_conf) }}%
+        <i class="info-icon fas fa-info-circle" data-info="overall"></i>
+        {% else %}
+        คุณมีความปลอดภัยที่จะไม่เป็นอยู่ที่ {{ "%.2f"|format(overall_conf) }}%
+        <i class="info-icon fas fa-info-circle" data-info="overall"></i>
+        {% endif %}
+    </div>
+</div>
+
+<!-- New detailed results section -->
+<div class="detailed-results">
+    <div class="result-card">
+        <h3 class="result-card-title">
+            ผลวิเคราะห์ Spiral
+            <i class="info-icon fas fa-info-circle" data-info="spiral"></i>
+        </h3>
+        <div class="result-data">
+            <span class="result-label">ผลลัพธ์:</span>
+            <span class="result-value">{{ sp_result }}</span>
+        </div>
+        <div class="result-data">
+            <span class="result-label">ความแม่นยำ:</span>
+            <span class="result-value">{{ sp_conf }}%</span>
+        </div>
+        <div class="spiral-progress progress-bar">
+            <div class="progress-fill" id="spiralProgress"></div>
         </div>
     </div>
 
-    <!-- New detailed results section -->
-    <div class="detailed-results">
-        <div class="result-card">
-            <h3 class="result-card-title">ผลวิเคราะห์ Spiral</h3>
-            <div class="result-data">
-                <span class="result-label">ผลลัพธ์:</span>
-                <span class="result-value">{{ sp_result }}</span>
-            </div>
-            <div class="result-data">
-                <span class="result-label">ความแม่นยำ:</span>
-                <span class="result-value">{{ sp_conf }}%</span>
-            </div>
-            <div class="spiral-progress progress-bar">
-                <div class="progress-fill" id="spiralProgress"></div>
-            </div>
+    <div class="result-card">
+        <h3 class="result-card-title">
+            ผลวิเคราะห์ Wave
+            <i class="info-icon fas fa-info-circle" data-info="wave"></i>
+        </h3>
+        <div class="result-data">
+            <span class="result-label">ผลลัพธ์:</span>
+            <span class="result-value">{{ wave_result }}</span>
         </div>
-
-        <div class="result-card">
-            <h3 class="result-card-title">ผลวิเคราะห์ Wave</h3>
-            <div class="result-data">
-                <span class="result-label">ผลลัพธ์:</span>
-                <span class="result-value">{{ wave_result }}</span>
-            </div>
-            <div class="result-data">
-                <span class="result-label">ความแม่นยำ:</span>
-                <span class="result-value">{{ wave_conf }}%</span>
-            </div>
-            <div class="wave-progress progress-bar">
-                <div class="progress-fill" id="waveProgress"></div>
-            </div>
+        <div class="result-data">
+            <span class="result-label">ความแม่นยำ:</span>
+            <span class="result-value">{{ wave_conf }}%</span>
+        </div>
+        <div class="wave-progress progress-bar">
+            <div class="progress-fill" id="waveProgress"></div>
         </div>
     </div>
+</div>
 
-    <div class="button-container">
-        <button class="test-again-button" onclick="handleTestAgain()">
-            <i class="fa fa-home" style="margin-right: 8px;"></i>กลับสู่หน้าหลัก
-        </button>
+<!-- Modal for detailed info -->
+<div class="info-modal" id="infoModal" style="display:none;">
+    <div class="info-modal-content">
+        <span class="close-modal" style="cursor:pointer; font-size:24px;">&times;</span>
+        <h3 id="modalTitle">รายละเอียดการคำนวณ</h3>
+        <div id="modalContent" class="modal-detail-content"></div>
     </div>
+</div>
 
-    <div class="history-section">
-        <h3 class="history-title">ประวัติการทดสอบ</h3>
-        <div class="history-list" id="historyList">
-            <!-- History items will be inserted here -->
-        </div>
+<div class="button-container">
+    <button class="test-again-button" onclick="handleTestAgain()">
+        <i class="fa fa-home" style="margin-right: 8px;"></i>กลับสู่หน้าหลัก
+    </button>
+</div>
+
+<div class="history-section">
+    <h3 class="history-title">ประวัติการทดสอบ</h3>
+    <div class="history-list" id="historyList">
+        <!-- History items will be inserted here -->
     </div>
+</div>
+
+<div class="notification" id="notification">บันทึกข้อมูลเรียบร้อยแล้ว</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const infoIcons = document.querySelectorAll('.info-icon');
+        const modal = document.getElementById('infoModal');
+        const modalContentElement = document.getElementById('modalContent');
+        const modalTitle = document.getElementById('modalTitle');
+        const closeModal = document.querySelector('.close-modal');
+
+        // เนื้อหาของ modal แต่ละประเภท ตาม data-info
+        const modalData = {
+            overall: {
+                title: "รายละเอียดการวิเคราะห์",
+                content: `
+<p>ระบบวิเคราะห์ความเสี่ยงโรคพาร์กินสัน (Parkinson's Disease) โดยรวมผลจากการวิเคราะห์ภาพวาดทั้งแบบ Spiral และ Wave ซึ่งทำนายโดยโมเดล AI ที่ได้รับการฝึกฝนเฉพาะทาง</p>
+
+    <div class="calculation-steps">
+  <div class="calculation-step">
+    <strong>ระบบการทำนาย:</strong> โมเดล AI จะส่งออกค่าเป็นตัวเลขระหว่าง 0 ถึง 1
+    <div class="formula-box">
+      <ul>
+        <li>ค่า 1 = โมเดลเชื่อมั่นว่าเป็น "Parkinson"</li>
+        <li>ค่า 0 = โมเดลเชื่อมั่นว่าเป็น "Healthy"</li>
+        <li>ค่าที่ได้จากโมเดลโดยตรง:
+          <ul>
+            <li>Spiral: <span class="value-highlight">{{ predicted_class_sp }}</span> → {{ sp_result }}</li>
+            <li>Wave: <span class="value-highlight">{{ predicted_class_wave }}</span> → {{ wave_result }}</li>
+          </ul>
+        </li>
+      </ul>
     </div>
+  </div>
 
-    <div class="notification" id="notification">บันทึกข้อมูลเรียบร้อยแล้ว</div>
+  <div class="calculation-step">
+    <strong>แปลงค่าความน่าจะเป็น</strong>: ระบบแปลงผลลัพธ์จากโมเดลให้เป็น "โอกาสที่จะเป็นโรคพาร์กินสัน"
+    <div class="formula-box">
+      เช่น ถ้าโมเดลทำนายว่าเป็น "Parkinson" และค่าความมั่นใจอยู่ที่ 0.9 โดยแปลโอกาสเป็นเปอร์เซ็น โดยนำ 0.9 x 100  →  Parkinson = 90%
+      <p><strong>ดังนั้นผลลัพธ์ที่ได้คือ</strong></p>
+      Spiral: โมเดลทำนายว่าเป็น <span class="value-highlight">{{ sp_result }}</span> และความมั่นใจอยู่ที่ <span class="value-highlight">{{ "%.4f"|format(sp_prob) }}</span> → <span class="value-highlight">{{ sp_conf }}%</span><br>
+      Wave: โมเดลทำนายว่าเป็น <span class="value-highlight">{{ wave_result }}</span> และความมั่นใจอยู่ที่ <span class="value-highlight">{{ "%.4f"|format(wave_prob) }}</span> → <span class="value-highlight">{{ wave_conf }}%</span><br>
+    </div>
+  </div>
 
-    <script>
+  <div class="calculation-step">
+    <strong>กำหนดน้ำหนักตามความแม่นยำ</strong>: โมเดลแต่ละตัวมีความแม่นยำต่างกัน
+    <div class="formula-box">
+      ความแม่นยำ Spiral: <span class="value-highlight">95.64% (0.9564)</span><br>
+      ความแม่นยำ Wave: <span class="value-highlight">94.29% (0.9429)</span><br>
+      น้ำหนักรวม: <span class="value-highlight">0.9564 + 0.9429 = 1.8993</span><br><br>
+      น้ำหนัก Spiral: <span class="value-highlight">0.9564 / 1.8993 = 0.5036</span> (50.36%)<br>
+      น้ำหนัก Wave: <span class="value-highlight">0.9429 / 1.8993 = 0.4964</span> (49.64%)
+    </div>
+  </div>
+
+  <div class="calculation-step">
+    <strong>คำนวณความน่าจะเป็นแบบถ่วงน้ำหนัก</strong>: ใช้วิธี Soft Voting
+    <div class="formula-box">
+      ความน่าจะเป็นถ่วงน้ำหนัก = (น้ำหนัก Spiral × ความน่าจะเป็น Spiral) + (น้ำหนัก Wave × ความน่าจะเป็น Wave)<br>
+      = (<span class="value-highlight">0.5036 × {{ "%.4f"|format(sp_prob) }}</span>) + (<span class="value-highlight">0.4964 × {{ "%.4f"|format(wave_prob) }}</span>)<br>
+      = <span class="value-highlight">
+        {{ "%.4f"|format(
+            (0.5036 * (sp_prob if sp_result == "Parkinson" else 1 - sp_prob)) +
+            (0.4964 * (wave_prob if wave_result == "Parkinson" else 1 - wave_prob))
+        ) }}
+      </span>
+    </div>
+  </div>
+
+ <div class="calculation-step">
+  <strong>ตัดสินผลลัพธ์สุดท้าย</strong>: ใช้ค่าขีดแบ่ง (threshold) ที่ 0.5
+  <div class="formula-box">
+    ความน่าจะเป็นถ่วงน้ำหนัก = 
+    <span class="value-highlight">
+      {{ "%.4f"|format(
+        (0.5036 * (sp_prob if sp_result == "Parkinson" else 1 - sp_prob)) + 
+        (0.4964 * (wave_prob if wave_result == "Parkinson" else 1 - wave_prob))
+      ) }}
+    </span><br>
+    ค่าขีดแบ่ง (threshold) = <span class="value-highlight">0.5</span><br><br>
+
+    <p style="margin-top: 1em;">
+      ถ้าค่า ความน่าจะเป็นถ่วงน้ำหนัก < 0.5 → ถือว่าเป็น <strong>"Healthy"</strong><br>
+      ถ้าค่า ความน่าจะเป็นถ่วงน้ำหนัก ≥ 0.5 → ถือว่าเป็น <strong>"Parkinson"</strong><br>
+    </p>
+
+    ผลลัพธ์สุดท้าย = <span class="value-highlight">{{ final_result }}</span>
+  </div>
+</div>
+
+
+
+  <div class="calculation-step">
+    <strong>แปลงเป็นเปอร์เซ็นต์ความเชื่อมั่น</strong>: แสดงค่าความเชื่อมั่นในรูปแบบเปอร์เซ็นต์
+    <div class="formula-box">
+      ความน่าจะเป็นถ่วงน้ำหนัก = <span class="value-highlight">
+        {{ "%.4f"|format(
+          (0.5036 * (sp_prob if sp_result == "Parkinson" else 1 - sp_prob)) + 
+          (0.4964 * (wave_prob if wave_result == "Parkinson" else 1 - wave_prob))
+        ) }}
+      </span><br>
+      {% if final_result == "Parkinson" %}
+      ความเชื่อมั่น = ความน่าจะเป็นถ่วงน้ำหนัก × 100 = <span class="value-highlight">{{ overall_conf }}%</span>
+      {% else %}
+      ความเชื่อมั่น = (1 - ความน่าจะเป็นถ่วงน้ำหนัก) × 100 = <span class="value-highlight">{{ overall_conf }}%</span>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button class="close-btn" onclick="document.getElementById('infoModal').style.display='none'">ปิด</button>
+</div>
+`
+
+            },
+            spiral: {
+                title: "รายละเอียดการวิเคราะห์ภาพวาด Spiral",
+                content: `<p>การวิเคราะห์ภาพวาดแบบ Spiral เป็นหนึ่งในวิธีการวินิจฉัยเบื้องต้นสำหรับโรคพาร์กินสัน โดยวัดจากความสามารถในการควบคุมการวาดเส้นโค้งแบบก้นหอย</p>
+
+
+<p><strong>หลักการวิเคราะห์:</strong></p>
+<ul>
+    <li>ผู้ป่วยโรคพาร์กินสันมักมีอาการสั่น (Tremor) ทำให้เส้นที่วาดไม่เรียบ</li>
+    <li>ขาดความสม่ำเสมอในการควบคุมการเคลื่อนไหว (Motor control)</li>
+    <li>มีการกระตุกหรือการหยุดชะงักระหว่างการวาด</li>
+</ul>
+
+<p><strong>การแปลผล:</strong></p>
+<div class="formula-box">
+    <p><strong>ค่าที่ได้จากโมเดล:</strong> <span class="value-highlight">{{ "%.0f"|format(predicted_class_sp) }}</span></p>
+    <p>โมเดลส่งออกค่าตัวเลขระหว่าง 0และ1:</p>
+    <ul>
+        <li>ค่า 1 แปลเป็น "Parkinson"</li>
+        <li>ค่า 0 แปลเป็น "Healthy"</li>
+    </ul>
+    <p><strong>ผลการวิเคราะห์: </strong> <span class="value-highlight">{{ sp_result }}</span></p>
+    <p><strong>โดยค่าความมั่นใจที่โมเดลให้มาคือ: </strong> <span class="value-highlight">{{ sp_conf }}%</span></p>
+</div>
+<p><strong>ค่าความแม่นยำของโมเดลที่ได้จากการฝึก : </strong><span class="value-highlight">95.64%</span></p>
+`
+            },
+            wave: {
+                title: "รายละเอียดการวิเคราะห์ภาพวาด Wave",
+                content: `<p>การวิเคราะห์ภาพวาดแบบ Wave ใช้เพื่อตรวจสอบการควบคุมกล้ามเนื้อขนาดเล็กและจังหวะในการเคลื่อนไหว ซึ่งมักมีผลกระทบจากโรคพาร์กินสัน</p>
+
+
+<p><strong>หลักการวิเคราะห์:</strong></p>
+<ul>
+    <li>ดูความสม่ำเสมอและความต่อเนื่องของเส้นโค้ง</li>
+    <li>พิจารณาความเบี่ยงเบนจากลวดลายมาตรฐาน</li>
+    <li>ตรวจจับการสั่นหรือการหยุดชะงัก</li>
+</ul>
+
+<p><strong>การแปลผล:</strong></p>
+<div class="formula-box">
+    <p><strong>ค่าที่ได้จากโมเดล:</strong> <span class="value-highlight">{{ "%.0f"|format(predicted_class_wave) }}</span></p>
+    <p>โมเดลส่งออกค่าตัวเลขระหว่าง 0และ1:</p>
+    <ul>
+        <li>ค่า 1 แปลเป็น "Parkinson"</li>
+        <li>ค่า 0 แปลเป็น "Healthy"</li>
+    </ul>
+    <p><strong>ผลการวิเคราะห์:</strong> <span class="value-highlight">{{ wave_result }}</span></p>
+    <p><strong>โดยค่าความมั่นใจที่โมเดลให้มาคือ: </strong> <span class="value-highlight">{{ wave_conf }}%</span></p>
+</div>
+<p><strong>ค่าความแม่นยำของโมเดลที่ได้จากการฝึก : </strong><span class="value-highlight">94.29%</span></p>
+`
+            }
+        };
+
+        infoIcons.forEach(icon => {
+            icon.addEventListener('click', () => {
+                const infoType = icon.getAttribute('data-info');
+                if(modalData[infoType]){
+                    modalTitle.textContent = modalData[infoType].title;
+                    modalContentElement.innerHTML = modalData[infoType].content;
+                    modal.style.display = 'block';
+                }
+            });
+        });
+
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        // ปิด modal เมื่อคลิกนอก modal content
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    });
+
+    function handleTestAgain() {
+        // ฟังก์ชันกลับไปหน้าหลัก (แก้ตามต้องการ)
+        window.location.href = "/";
+    }
+
         // Show loading animation
         window.addEventListener('load', function () {
             // Set progress bar widths based on confidence scores
@@ -872,18 +1250,39 @@
         // Show notification function
         function showNotification(message) {
             const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.classList.add('show');
+            if (notification) {
+                notification.textContent = message;
+                notification.classList.add('show');
 
-            setTimeout(function () {
-                notification.classList.remove('show');
-            }, 3000);
+                setTimeout(function () {
+                    notification.classList.remove('show');
+                }, 3000);
+            } else {
+                console.error("Notification element not found");
+            }
         }
 
-        // Update history function - updated to display more details on hover
+        // Update history function - ปรับปรุง
         function updateHistoryList() {
             const historyList = document.getElementById('historyList');
-            const history = Object.entries(localStorage).map(([_, value]) => JSON.parse(value));
+            if (!historyList) {
+                console.error("History list element not found");
+                return;
+            }
+
+            // แปลง localStorage เป็น array
+            const history = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                try {
+                    const value = JSON.parse(localStorage.getItem(key));
+                    if (value && value.result) {  // ตรวจสอบว่าเป็นข้อมูลประวัติที่ถูกต้อง
+                        history.push(value);
+                    }
+                } catch (e) {
+                    console.error("Error parsing history item:", e);
+                }
+            }
 
             if (history.length === 0) {
                 historyList.innerHTML = '<div class="history-item">ไม่มีประวัติการทดสอบ</div>';
@@ -900,23 +1299,60 @@
                 historyItem.style.opacity = '0';
                 historyItem.style.animation = `fadeIn 0.3s ease ${0.1 * index}s forwards`;
 
-                // Add detailed tooltip data
-                const tooltipContent = `Spiral: ${item.spiralResult || "N/A"} (${item.spiralConf || "0"}%)<br>Wave: ${item.waveResult || "N/A"} (${item.waveConf || "0"}%)`;
-                historyItem.setAttribute('title', tooltipContent);
-                historyItem.setAttribute('data-toggle', 'tooltip');
-                historyItem.setAttribute('title', tooltipContent);
-                historyItem.setAttribute('data-toggle', 'tooltip');
-                historyItem.setAttribute('data-html', 'true');
-                historyItem.setAttribute('title', tooltipContent);
-
+                // เพิ่มข้อมูลเพิ่มเติมใน div แทนการใช้ tooltip
                 historyItem.innerHTML = `
-                    <div class="history-result">${item.result}</div>
-                    <div class="history-date">${item.date}</div>
-                `;
+            <div class="history-result">${item.result || "N/A"} 
+                <span style="font-size: 0.8em; color: #7f8c9a;">(${item.overallConf || "0"}%)</span>
+            </div>
+            <div class="history-date">${item.date || "N/A"}</div>
+        `;
+
+                // เพิ่ม event listener สำหรับการแสดงรายละเอียด
+                historyItem.addEventListener('mouseenter', function () {
+                    this.setAttribute('title', `Spiral: ${item.spiralResult || "N/A"} (${item.spiralConf || "0"}%)
+Wave: ${item.waveResult || "N/A"} (${item.waveConf || "0"}%)`);
+                });
+
                 historyList.appendChild(historyItem);
             });
         }
 
+        // Save result function - แก้ไขให้มีการตรวจสอบ
+        function saveResult() {
+            try {
+                // Get the results
+                const finalResult = document.getElementById('result').textContent;
+                const overallConf = "{{ overall_conf }}";
+                const spiralResult = "{{ sp_result }}";
+                const spiralConf = "{{ sp_conf }}";
+                const waveResult = "{{ wave_result }}";
+                const waveConf = "{{ wave_conf }}";
+                const timestamp = new Date().toLocaleString();
+
+                // Generate a unique key for localStorage
+                const key = 'result_' + Date.now();
+
+                // Save to localStorage with all details
+                localStorage.setItem(key, JSON.stringify({
+                    result: finalResult,
+                    overallConf: overallConf,
+                    spiralResult: spiralResult,
+                    spiralConf: spiralConf,
+                    waveResult: waveResult,
+                    waveConf: waveConf,
+                    date: timestamp
+                }));
+
+                // Show notification
+                showNotification('บันทึกข้อมูลเรียบร้อยแล้ว');
+
+                // Update history
+                updateHistoryList();
+            } catch (error) {
+                console.error("Error saving results:", error);
+                showNotification('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+            }
+        }
         // Text animation
         function animateText(element, text) {
             element.textContent = '';

@@ -521,22 +521,21 @@
         <main>
             <div class="start-container">
                 <p class="start-text">
-                    Welcome to the Parkinson's Test. This simple drawing test can help detect early signs of Parkinson's
-                    disease. Please click below to start the assessment.
+                    ยินดีต้อนรับสู่การทดสอบโรคพาร์กินสัน แบบทดสอบการวาดภาพอย่างง่ายนี้สามารถช่วยในการตรวจจับสัญญาณเริ่มต้นของโรคพาร์กินสันได้ กรุณาคลิกด้านล่างเพื่อเริ่มการประเมิน
                 </p>
-                <a href="#" class="start-btn" id="startTestBtn">Start Test</a>
+                <a href="#" class="start-btn" id="startTestBtn">เริ่มทดสอบ</a>
             </div>
 
             <!-- Table container with title -->
             <div class="table-container">
-                <h2 class="table-title">Previous Test Results</h2>
+                <h2 class="table-title">ผลการทดสอบก่อนหน้า</h2>
                 <div class="table-wrapper">
                     <table id="resultTable">
                         <thead>
                             <tr>
-                                <th>Result</th>
-                                <th>Date</th>
-                                <th>Time</th>
+                                <th>ผลลัพธ์</th>
+                                <th>วันที่</th>
+                                <th>เวลา</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -546,7 +545,7 @@
                 </div>
 
                 <!-- Clear LocalStorage button -->
-                <button class="clear-button" onclick="clearLocalStorage()">Clear All Data</button>
+                <button class="clear-button" onclick="clearLocalStorage()">ลบข้อมูลทั้งหมด</button>
             </div>
         </main>
     </div>
@@ -555,21 +554,21 @@
     <div class="modal-overlay" id="testOptionsModal">
         <div class="modal-container">
             <div class="modal-header">
-                <h3>Choose Test Method</h3>
+                <h3>เลือกวิธีการทดสอบ</h3>
                 <button class="modal-close" id="closeModal">✕</button>
             </div>
             <div class="modal-body">
                 <p class="modal-text">
-                    Please select how you would like to take the Parkinson's assessment test
+                    กรุณาเลือกวิธีที่คุณต้องการใช้ในการทดสอบประเมินโรคพาร์กินสัน
                 </p>
                 <div class="modal-buttons">
                     <a href="/drawnSP" class="modal-btn btn-draw recommended-btn">
                         <span class="icon icon-pencil"></span>
-                        Draw Test
+                        วาดภาพ 
                     </a>
                     <a href="/upload" class="modal-btn btn-upload">
                         <span class="icon icon-upload"></span>
-                        Upload Image
+                        อัปโหลดภาพ
                     </a>
                 </div>
             </div>

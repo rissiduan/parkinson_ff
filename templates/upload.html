@@ -551,19 +551,18 @@
 
         <main>
             <div class="upload-container">
-                <h2 class="upload-title">Upload Test Images</h2>
+                <h2 class="upload-title">ทกสอบโดยการอัปโหลดภาพ</h2>
                 <p class="upload-instructions">
-                    Please upload or drag and drop two images for the Parkinson's assessment: a spiral drawing and a
-                    wave drawing. The system will analyze both images to provide a comprehensive test result.
+                    กรุณาอัปโหลดหรือลากแล้วปล่อยภาพวาดสองภาพสำหรับการประเมินพาร์กินสัน: ภาพวาดเกลียวและภาพวาดคลื่น ระบบจะวิเคราะห์ภาพทั้งสองเพื่อให้ผลการทดสอบที่ครบถ้วนค่ะ
                 </p>
 
                 <div class="upload-area-wrapper">
                     <!-- Spiral upload area -->
                     <div class="upload-area">
-                        <label class="upload-label">Spiral Drawing</label>
+                        <label class="upload-label">รูปก้นหอย</label>
                         <div class="upload-box" id="spiralUploadBox">
                             <i class="upload-icon">⟲</i>
-                            <p class="upload-text">Click or drag an image here</p>
+                            <p class="upload-text">คลิกหรือลากภาพมาที่นี่เลยค่ะ</p>
                             <input type="file" id="spiralInput" accept="image/*">
                             <img id="spiralPreview" class="image-preview" alt="Spiral preview">
                             <div class="preview-overlay" id="spiralOverlay" style="display: none;">
@@ -574,10 +573,10 @@
 
                     <!-- Wave upload area -->
                     <div class="upload-area">
-                        <label class="upload-label">Wave Drawing</label>
+                        <label class="upload-label">รูปคลื่น</label>
                         <div class="upload-box" id="waveUploadBox">
                             <i class="upload-icon">〰️</i>
-                            <p class="upload-text">Click or drag an image here</p>
+                            <p class="upload-text">คลิกหรือลากภาพมาที่นี่เลยค่ะ</p>
                             <input type="file" id="waveInput" accept="image/*">
                             <img id="wavePreview" class="image-preview" alt="Wave preview">
                             <div class="preview-overlay" id="waveOverlay" style="display: none;">
@@ -588,8 +587,8 @@
                 </div>
 
                 <div class="button-container">
-                    <button id="testButton" class="test-button" disabled>Start Test Analysis</button>
-                    <button id="backButton" class="back-button">Back to Home</button>
+                    <button id="testButton" class="test-button" disabled>เริ่มทดสอบ</button>
+                    <button id="backButton" class="back-button">กลับหน้าหลัก</button>
                 </div>
             </div>
         </main>
@@ -598,10 +597,10 @@
     <!-- Warning Modal -->
     <div class="warning-modal" id="warningModal">
         <div class="warning-modal-content">
-            <h2 class="warning-title">Correct Testing Format</h2>
+            <h2 class="warning-title">รูปแบบภาพที่ถูกต้อง</h2>
             <img src="/get-image" alt="Warning Image" class="warning-image" id="warningImage">
             <div class="warning-footer">
-                <button class="warning-close" id="warningClose">I Understand</button>
+                <button class="warning-close" id="warningClose">ตกลง</button>
             </div>
         </div>
     </div>
@@ -609,7 +608,7 @@
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
-        <p class="loading-text">Processing images, please wait...</p>
+        <p class="loading-text">กำลังประมวลผลภาพ กรุณารอสักครู่...</p>
     </div>
 
     <!-- Alert -->
