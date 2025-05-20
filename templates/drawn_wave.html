@@ -616,7 +616,8 @@
     <div class="header">
         <div>
             <h1 class="page-title">Parkinson Wave Drawing Test</h1>
-            <p class="page-subtitle">แบบทดสอบนี้จะวิเคราะห์รูปแบบการวาดคลื่นของคุณ เพื่อช่วยในการตรวจพบความผิดปกติของการเคลื่อนไหวในระยะเริ่มต้น</p>
+            <p class="page-subtitle">แบบทดสอบนี้จะวิเคราะห์รูปแบบการวาดคลื่นของคุณ
+                เพื่อช่วยในการตรวจพบความผิดปกติของการเคลื่อนไหวในระยะเริ่มต้น</p>
         </div>
     </div>
 
@@ -627,9 +628,9 @@
             </div>
             <h2>Instructions</h2>
             <ol>
-                <li>เริ่มต้นจากด้านซ้ายของคลื่น</li> 
-                <li>วาดตามเส้นแนะแนวสีเทา</li> 
-                <li>พยายามวาดเส้นให้เรียบเนียนที่สุดเท่าที่จะทำได้</li> 
+                <li>เริ่มต้นจากด้านซ้ายของคลื่น</li>
+                <li>วาดตามเส้นแนะแนวสีเทา</li>
+                <li>พยายามวาดเส้นให้เรียบเนียนที่สุดเท่าที่จะทำได้</li>
                 <li>วาดด้วยความเร็วที่สบาย ไม่ต้องรีบ ความแม่นยำสำคัญกว่าความเร็ว</li>
 
             </ol>
@@ -708,29 +709,71 @@
         }
 
         function drawWaveTemplate() {
+            // ล้างพื้นหลัง
             templateCtx.fillStyle = 'white';
             templateCtx.fillRect(0, 0, templateCanvas.width, templateCanvas.height);
-            templateCtx.beginPath();
-            templateCtx.strokeStyle = '#cccccc';
-            templateCtx.lineWidth = 2;
 
-            const amplitude = 50; 
-            const frequency = 0.03; 
+            // ตั้งค่าคลื่น
+            const amplitude = 50; // ความสูงของคลื่น
+            const frequency = 0.03; // ความถี่
             const startX = 50;
             const endX = templateCanvas.width - 50;
             const centerY = templateCanvas.height / 2;
 
-           
-            templateCtx.moveTo(startX, centerY);
+            // จุดเริ่มต้นของคลื่น
+            const startY = centerY + amplitude * Math.sin(0);
 
-            
+            // วาดเส้นคลื่น
+            templateCtx.beginPath();
+            templateCtx.strokeStyle = '#cccccc';
+            templateCtx.lineWidth = 2;
+            templateCtx.moveTo(startX, startY);
+
             for (let x = startX; x <= endX; x++) {
                 const y = centerY + amplitude * Math.sin(frequency * (x - startX) * Math.PI);
                 templateCtx.lineTo(x, y);
             }
 
             templateCtx.stroke();
+
+            // วาดจุดวงกลมที่จุดเริ่มต้น (ซ้าย)
+            templateCtx.beginPath();
+            templateCtx.arc(startX, startY, 7, 0, Math.PI * 2); // ใหญ่กว่าปกติ
+            templateCtx.fillStyle = '#888888'; // สีเข้ม
+            templateCtx.fill();
+
+            // วาดลูกศรที่จุดสิ้นสุด (ขวา)
+            const endY = centerY + amplitude * Math.sin(frequency * (endX - startX) * Math.PI);
+
+            // คำนวณทิศทางของคลื่นที่ปลาย (อนุพันธ์)
+            const dx = 1;
+            const dy = amplitude * frequency * Math.PI * Math.cos(frequency * (endX - startX) * Math.PI);
+            const mag = Math.hypot(dx, dy);
+            const tangentX = dx / mag;
+            const tangentY = dy / mag;
+
+            const normalX = -tangentY;
+            const normalY = tangentX;
+
+            const arrowSize = 16; // ใหญ่กว่าปกติ
+            const arrowWidth = 6;
+
+            // วาดหัวลูกศร
+            templateCtx.beginPath();
+            templateCtx.moveTo(endX, endY);
+            templateCtx.lineTo(
+                endX - arrowSize * tangentX + arrowWidth * normalX,
+                endY - arrowSize * tangentY + arrowWidth * normalY
+            );
+            templateCtx.lineTo(
+                endX - arrowSize * tangentX - arrowWidth * normalX,
+                endY - arrowSize * tangentY - arrowWidth * normalY
+            );
+            templateCtx.closePath();
+            templateCtx.fillStyle = '#888888'; // สีเข้ม
+            templateCtx.fill();
         }
+
 
         function getCoordinates(e) {
             const rect = canvas.getBoundingClientRect();
@@ -823,7 +866,7 @@
 
             if (!isDrawing) {
                 showCustomAlert("กรุณาวาดภาพ", "คุณจำเป็นต้องวาดภาพเส้นตามเส้นประก่อนดำเนินการต่อ");
-                return;  
+                return;
             }
 
             const progressOverlay = document.getElementById('progressOverlay');
@@ -865,15 +908,15 @@
             const dataURL = exportCanvas.toDataURL('image/png');
 
             uploadStatus.textContent = "กำลังประมวลผลรูปวาด...";
-            progressFill.style.width = '50%'; 
+            progressFill.style.width = '50%';
 
             fetch('/Wave', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json' 
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    image: dataURL  
+                    image: dataURL
                 })
             })
                 .then(response => response.json())

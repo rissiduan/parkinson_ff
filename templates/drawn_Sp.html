@@ -617,7 +617,9 @@
     <div class="header">
         <div>
             <h1 class="page-title">Parkinson Drawing Test</h1>
-            <p class="page-subtitle">การทดสอบนี้จะวิเคราะห์รูปแบบการวาดของคุณเพื่อช่วยในการตรวจพบความผิดปกติของการเคลื่อนไหวในระยะเริ่มต้น</p>
+            <p class="page-subtitle">
+                การทดสอบนี้จะวิเคราะห์รูปแบบการวาดของคุณเพื่อช่วยในการตรวจพบความผิดปกติของการเคลื่อนไหวในระยะเริ่มต้น
+            </p>
         </div>
     </div>
 
@@ -628,7 +630,7 @@
             </div>
             <h2>คำแนะนำ</h2>
             <ol>
-                <li>เริ่มวาดจากจุดกึ่งกลางของก้นหอย</li> 
+                <li>เริ่มวาดจากจุดกึ่งกลางของก้นหอย</li>
                 <li>วาดเส้นออกไปตามแนวเส้นสีเทาที่กำหนดไว้</li>
                 <li>พยายามวาดให้เส้นเรียบเนียนที่สุดเท่าที่จะทำได้</li>
                 <li>วาดด้วยความเร็วที่คุณรู้สึกสบาย — ความแม่นยำสำคัญกว่าความเร็ว</li>
@@ -651,7 +653,7 @@
         <p>การทดสอบการวาดภาพนี้ใช้เพื่อช่วยในการประเมินการควบคุมการเคลื่อนไหวและการประสานงานของกล้ามเนื้อ</p>
     </div>
 
-  
+
     <div class="progress-overlay" id="progressOverlay">
         <div class="progress-container">
             <div class="upload-icon">
@@ -684,19 +686,19 @@
         let lastX = 0;
         let lastY = 0;
 
-    
+
         const templateCanvas = document.createElement('canvas');
         templateCanvas.width = canvas.width;
         templateCanvas.height = canvas.height;
         const templateCtx = templateCanvas.getContext('2d');
 
-      
+
         const drawingCanvas = document.createElement('canvas');
         drawingCanvas.width = canvas.width;
         drawingCanvas.height = canvas.height;
         const drawingCtx = drawingCanvas.getContext('2d');
 
-  
+
         function showCustomAlert(title, message) {
             const alertModal = document.getElementById('alertModal');
             const alertTitle = document.getElementById('alertTitle');
@@ -741,30 +743,82 @@
         function drawSpiralTemplate() {
             templateCtx.fillStyle = 'white';
             templateCtx.fillRect(0, 0, templateCanvas.width, templateCanvas.height);
+
+            const centerX = templateCanvas.width / 2;
+            const centerY = templateCanvas.height / 2;
+
+            // Draw the slightly larger starting circle with darker color
+            templateCtx.beginPath();
+            templateCtx.arc(centerX, centerY, 8, 0, Math.PI * 2);
+            templateCtx.fillStyle = '#888888'; // Darker color for the center point
+            templateCtx.fill();
+
+            // Draw the spiral with arrow
             templateCtx.beginPath();
             templateCtx.strokeStyle = '#cccccc';
             templateCtx.lineWidth = 2;
 
-            const centerX = templateCanvas.width / 2;
-            const centerY = templateCanvas.height / 2;
             let angle = 0;
-            let radius = 0;
+            let radius = 5;
             const maxRadius = templateCanvas.width * 0.36;
             const angleIncrement = 0.2;
             const radiusIncrement = 8;
 
-            templateCtx.moveTo(centerX, centerY);
+            const startX = centerX + radius * Math.cos(angle);
+            const startY = centerY + radius * Math.sin(angle);
+            templateCtx.moveTo(startX, startY);
 
             while (radius < maxRadius) {
                 angle += angleIncrement;
-                radius = angle * radiusIncrement;
+                radius = 5 + angle * radiusIncrement;
                 const x = centerX + radius * Math.cos(angle);
                 const y = centerY + radius * Math.sin(angle);
                 templateCtx.lineTo(x, y);
             }
 
+            // Save the end point
+            const endX = centerX + radius * Math.cos(angle);
+            const endY = centerY + radius * Math.sin(angle);
+
+            // Draw the spiral
             templateCtx.stroke();
+
+            // Compute the true tangent vector from spiral derivative
+            const r = radius;
+            const dr_dtheta = radiusIncrement;
+
+            // Parametric derivatives
+            const dx = dr_dtheta * Math.cos(angle) - r * Math.sin(angle);
+            const dy = dr_dtheta * Math.sin(angle) + r * Math.cos(angle);
+
+            // Normalize tangent vector
+            const mag = Math.hypot(dx, dy);
+            const tangentX = dx / mag;
+            const tangentY = dy / mag;
+
+            // Perpendicular vector (normal to tangent)
+            const normalX = -tangentY;
+            const normalY = tangentX;
+
+            // Draw arrowhead
+            const arrowSize = 16;
+            const arrowWidth = arrowSize / 2;
+
+            templateCtx.beginPath();
+            templateCtx.moveTo(endX, endY);
+            templateCtx.lineTo(
+                endX - arrowSize * tangentX + arrowWidth * normalX,
+                endY - arrowSize * tangentY + arrowWidth * normalY
+            );
+            templateCtx.lineTo(
+                endX - arrowSize * tangentX - arrowWidth * normalX,
+                endY - arrowSize * tangentY - arrowWidth * normalY
+            );
+            templateCtx.closePath();
+            templateCtx.fillStyle = '#888888';
+            templateCtx.fill();
         }
+
 
         function getCoordinates(e) {
             const rect = canvas.getBoundingClientRect();
@@ -836,7 +890,7 @@
 
         function clearCanvas() {
             initCanvas();
-          
+
             const canvasContainer = document.querySelector('.canvas-container');
             canvasContainer.style.animation = 'pulse 0.3s ease';
             setTimeout(() => {
@@ -849,7 +903,7 @@
             const pixels = imageData.data;
             let isDrawing = false;
 
-          
+
             for (let i = 0; i < pixels.length; i += 4) {
                 if (pixels[i] !== 255 || pixels[i + 1] !== 255 || pixels[i + 2] !== 255 || pixels[i + 3] !== 255) {
                     isDrawing = true;
@@ -857,20 +911,20 @@
                 }
             }
 
-         
+
             if (!isDrawing) {
                 showCustomAlert("กรุณาวาดภาพ", "คุณจำเป็นต้องวาดภาพเส้นตามเส้นประก่อนดำเนินการต่อ");
-                return;  
+                return;
             }
 
-         
+
             const progressOverlay = document.getElementById('progressOverlay');
             const progressFill = document.getElementById('progressFill');
             const uploadStatus = document.getElementById('uploadStatus');
 
             progressOverlay.style.display = 'flex';
 
-   
+
             progressFill.style.width = '0%';
             progressFill.style.animation = 'progress 0.3s linear forwards';
 
