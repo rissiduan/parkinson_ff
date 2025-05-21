@@ -570,12 +570,12 @@
 
         .danger-text {
             color: var(--danger-color);
-          
+
         }
 
         .safe-text {
             color: var(--secondary-color);
-         
+
         }
 
         .info-icon {
@@ -747,7 +747,7 @@
 
 <body>
     <div class="particles">
-       
+
     </div>
 
     <div class="glow"></div>
@@ -761,91 +761,91 @@
     </div>
 
     <div class="result-container">
-    <div class="result" id="result">{{ final_result }}</div>
-    <div style="margin-top: 10px; font-size: 18px; font-weight: 500;"
-        class="{{ 'danger-text' if final_result == 'Parkinson' else 'safe-text' }}">
-        {% if final_result == 'Parkinson' %}
-        คุณมีความเสี่ยงที่จะเป็นโรค Parkinson {{ "%.2f"|format(overall_conf) }}%
-        <i class="info-icon fas fa-info-circle" data-info="overall"></i>
-        {% else %}
-        คุณมีความปลอดภัยที่จะไม่เป็นอยู่ที่ {{ "%.2f"|format(overall_conf) }}%
-        <i class="info-icon fas fa-info-circle" data-info="overall"></i>
-        {% endif %}
-    </div>
-</div>
-
-<div class="detailed-results">
-    <div class="result-card">
-        <h3 class="result-card-title">
-            ผลวิเคราะห์ Spiral
-            <i class="info-icon fas fa-info-circle" data-info="spiral"></i>
-        </h3>
-        <div class="result-data">
-            <span class="result-label">ผลลัพธ์:</span>
-            <span class="result-value">{{ sp_result }}</span>
-        </div>
-        <div class="result-data">
-            <span class="result-label">ความแม่นยำ:</span>
-            <span class="result-value">{{ sp_conf }}%</span>
-        </div>
-        <div class="spiral-progress progress-bar">
-            <div class="progress-fill" id="spiralProgress"></div>
+        <div class="result" id="result">{{ final_result }}</div>
+        <div style="margin-top: 10px; font-size: 18px; font-weight: 500;"
+            class="{{ 'danger-text' if final_result == 'Parkinson' else 'safe-text' }}">
+            {% if final_result == 'Parkinson' %}
+            คุณมีความเสี่ยงที่จะเป็นโรค Parkinson {{ "%.2f"|format(overall_conf) }}%
+            <i class="info-icon fas fa-info-circle" data-info="overall"></i>
+            {% else %}
+            คุณมีความปลอดภัยที่จะไม่เป็นอยู่ที่ {{ "%.2f"|format(overall_conf) }}%
+            <i class="info-icon fas fa-info-circle" data-info="overall"></i>
+            {% endif %}
         </div>
     </div>
 
-    <div class="result-card">
-        <h3 class="result-card-title">
-            ผลวิเคราะห์ Wave
-            <i class="info-icon fas fa-info-circle" data-info="wave"></i>
-        </h3>
-        <div class="result-data">
-            <span class="result-label">ผลลัพธ์:</span>
-            <span class="result-value">{{ wave_result }}</span>
+    <div class="detailed-results">
+        <div class="result-card">
+            <h3 class="result-card-title">
+                ผลวิเคราะห์ Spiral
+                <i class="info-icon fas fa-info-circle" data-info="spiral"></i>
+            </h3>
+            <div class="result-data">
+                <span class="result-label">ผลลัพธ์:</span>
+                <span class="result-value">{{ sp_result }}</span>
+            </div>
+            <div class="result-data">
+                <span class="result-label">ความแม่นยำ:</span>
+                <span class="result-value">{{ sp_conf }}%</span>
+            </div>
+            <div class="spiral-progress progress-bar">
+                <div class="progress-fill" id="spiralProgress"></div>
+            </div>
         </div>
-        <div class="result-data">
-            <span class="result-label">ความแม่นยำ:</span>
-            <span class="result-value">{{ wave_conf }}%</span>
-        </div>
-        <div class="wave-progress progress-bar">
-            <div class="progress-fill" id="waveProgress"></div>
+
+        <div class="result-card">
+            <h3 class="result-card-title">
+                ผลวิเคราะห์ Wave
+                <i class="info-icon fas fa-info-circle" data-info="wave"></i>
+            </h3>
+            <div class="result-data">
+                <span class="result-label">ผลลัพธ์:</span>
+                <span class="result-value">{{ wave_result }}</span>
+            </div>
+            <div class="result-data">
+                <span class="result-label">ความแม่นยำ:</span>
+                <span class="result-value">{{ wave_conf }}%</span>
+            </div>
+            <div class="wave-progress progress-bar">
+                <div class="progress-fill" id="waveProgress"></div>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="info-modal" id="infoModal" style="display:none;">
-    <div class="info-modal-content">
-        <span class="close-modal" style="cursor:pointer; font-size:24px;">&times;</span>
-        <h3 id="modalTitle">รายละเอียดการคำนวณ</h3>
-        <div id="modalContent" class="modal-detail-content"></div>
+    <div class="info-modal" id="infoModal" style="display:none;">
+        <div class="info-modal-content">
+            <span class="close-modal" style="cursor:pointer; font-size:24px;">&times;</span>
+            <h3 id="modalTitle">รายละเอียดการคำนวณ</h3>
+            <div id="modalContent" class="modal-detail-content"></div>
+        </div>
     </div>
-</div>
 
-<div class="button-container">
-    <button class="test-again-button" onclick="handleTestAgain()">
-        <i class="fa fa-home" style="margin-right: 8px;"></i>กลับสู่หน้าหลัก
-    </button>
-</div>
-
-<div class="history-section">
-    <h3 class="history-title">ประวัติการทดสอบ</h3>
-    <div class="history-list" id="historyList">
+    <div class="button-container">
+        <button class="test-again-button" onclick="handleTestAgain()">
+            <i class="fa fa-home" style="margin-right: 8px;"></i>กลับสู่หน้าหลัก
+        </button>
     </div>
-</div>
 
-<div class="notification" id="notification">บันทึกข้อมูลเรียบร้อยแล้ว</div>
+    <div class="history-section">
+        <h3 class="history-title">ประวัติการทดสอบ</h3>
+        <div class="history-list" id="historyList">
+        </div>
+    </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const infoIcons = document.querySelectorAll('.info-icon');
-        const modal = document.getElementById('infoModal');
-        const modalContentElement = document.getElementById('modalContent');
-        const modalTitle = document.getElementById('modalTitle');
-        const closeModal = document.querySelector('.close-modal');
+    <div class="notification" id="notification">บันทึกข้อมูลเรียบร้อยแล้ว</div>
 
-        const modalData = {
-            overall: {
-                title: "รายละเอียดการวิเคราะห์",
-                content: `
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const infoIcons = document.querySelectorAll('.info-icon');
+            const modal = document.getElementById('infoModal');
+            const modalContentElement = document.getElementById('modalContent');
+            const modalTitle = document.getElementById('modalTitle');
+            const closeModal = document.querySelector('.close-modal');
+
+            const modalData = {
+                overall: {
+                    title: "รายละเอียดการวิเคราะห์",
+                    content: `
 <p>ระบบวิเคราะห์ความเสี่ยงโรคพาร์กินสัน (Parkinson's Disease) โดยรวมผลจากการวิเคราะห์ภาพวาดทั้งแบบ Spiral และ Wave ซึ่งทำนายโดยโมเดล AI ที่ได้รับการฝึกฝนเฉพาะทาง</p>
 
     <div class="calculation-steps">
@@ -946,10 +946,10 @@
 </div>
 `
 
-            },
-            spiral: {
-                title: "รายละเอียดการวิเคราะห์ภาพวาด Spiral",
-                content: `<p>การวิเคราะห์ภาพวาดแบบ Spiral เป็นหนึ่งในวิธีการวินิจฉัยเบื้องต้นสำหรับโรคพาร์กินสัน โดยวัดจากความสามารถในการควบคุมการวาดเส้นโค้งแบบก้นหอย</p>
+                },
+                spiral: {
+                    title: "รายละเอียดการวิเคราะห์ภาพวาด Spiral",
+                    content: `<p>การวิเคราะห์ภาพวาดแบบ Spiral เป็นหนึ่งในวิธีการวินิจฉัยเบื้องต้นสำหรับโรคพาร์กินสัน โดยวัดจากความสามารถในการควบคุมการวาดเส้นโค้งแบบก้นหอย</p>
 
 
 <p><strong>หลักการวิเคราะห์:</strong></p>
@@ -972,10 +972,10 @@
 </div>
 <p><strong>ค่าความแม่นยำของโมเดลที่ได้จากการฝึก : </strong><span class="value-highlight">95.64%</span></p>
 `
-            },
-            wave: {
-                title: "รายละเอียดการวิเคราะห์ภาพวาด Wave",
-                content: `<p>การวิเคราะห์ภาพวาดแบบ Wave ใช้เพื่อตรวจสอบการควบคุมกล้ามเนื้อขนาดเล็กและจังหวะในการเคลื่อนไหว ซึ่งมักมีผลกระทบจากโรคพาร์กินสัน</p>
+                },
+                wave: {
+                    title: "รายละเอียดการวิเคราะห์ภาพวาด Wave",
+                    content: `<p>การวิเคราะห์ภาพวาดแบบ Wave ใช้เพื่อตรวจสอบการควบคุมกล้ามเนื้อขนาดเล็กและจังหวะในการเคลื่อนไหว ซึ่งมักมีผลกระทบจากโรคพาร์กินสัน</p>
 
 
 <p><strong>หลักการวิเคราะห์:</strong></p>
@@ -998,34 +998,34 @@
 </div>
 <p><strong>ค่าความแม่นยำของโมเดลที่ได้จากการฝึก : </strong><span class="value-highlight">94.29%</span></p>
 `
-            }
-        };
+                }
+            };
 
-        infoIcons.forEach(icon => {
-            icon.addEventListener('click', () => {
-                const infoType = icon.getAttribute('data-info');
-                if(modalData[infoType]){
-                    modalTitle.textContent = modalData[infoType].title;
-                    modalContentElement.innerHTML = modalData[infoType].content;
-                    modal.style.display = 'block';
+            infoIcons.forEach(icon => {
+                icon.addEventListener('click', () => {
+                    const infoType = icon.getAttribute('data-info');
+                    if (modalData[infoType]) {
+                        modalTitle.textContent = modalData[infoType].title;
+                        modalContentElement.innerHTML = modalData[infoType].content;
+                        modal.style.display = 'block';
+                    }
+                });
+            });
+
+            closeModal.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
                 }
             });
         });
 
-        closeModal.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-    });
-
-    function handleTestAgain() {
-        window.location.href = "/";
-    }
+        function handleTestAgain() {
+            window.location.href = "/";
+        }
 
         window.addEventListener('load', function () {
             document.getElementById('spiralProgress').style.setProperty('--progress-width', '{{ sp_conf }}%');
@@ -1062,9 +1062,9 @@
 
                 const shapeType = Math.floor(Math.random() * 3);
                 if (shapeType === 0) {
-                    confetti.style.borderRadius = '50%'; 
+                    confetti.style.borderRadius = '50%';
                 } else if (shapeType === 1) {
-                    confetti.style.borderRadius = '0'; 
+                    confetti.style.borderRadius = '0';
                 } else {
                     confetti.style.width = '0';
                     confetti.style.height = '0';
@@ -1100,7 +1100,7 @@
         }
 
         function handleTestAgain() {
-         
+
             const loadingOverlay = document.querySelector('.loading-overlay');
             if (loadingOverlay) {
                 loadingOverlay.style.display = 'flex';
@@ -1127,11 +1127,11 @@
 
         function createParticles() {
             const particlesContainer = document.querySelector('.particles');
-            particlesContainer.innerHTML = ''; 
+            particlesContainer.innerHTML = '';
 
-            const numParticles = 60; 
+            const numParticles = 60;
 
-         
+
             const colors = [
                 'rgba(74, 144, 226, 0.3)', // primary-color
                 'rgba(69, 160, 73, 0.25)', // secondary-color
@@ -1145,22 +1145,22 @@
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
 
-                const size = Math.random() * 35 + 10; 
+                const size = Math.random() * 35 + 10;
                 particle.style.width = `${size}px`;
                 particle.style.height = `${size}px`;
 
-               
+
                 particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
 
-                
+
                 particle.style.left = `${Math.random() * 100}%`;
                 particle.style.top = `${Math.random() * 100}%`;
 
-                
-                const duration = Math.random() * 30 + 25; 
+
+                const duration = Math.random() * 30 + 25;
                 const delay = Math.random() * 15;
 
-               
+
                 if (i % 3 === 0) {
                     particle.style.animation = `float ${duration}s infinite ease-in-out alternate-reverse`;
                 } else if (i % 3 === 1) {
@@ -1169,47 +1169,23 @@
                     particle.style.animation = `float ${duration - 5}s infinite ease-in-out`;
                 }
 
-                particle.style.animationDelay = `-${delay}s`; 
+                particle.style.animationDelay = `-${delay}s`;
 
 
                 particlesContainer.appendChild(particle);
             }
         }
 
-        
+
         document.addEventListener('DOMContentLoaded', function () {
             createParticles();
 
-            
+
             updateHistoryList();
         });
 
         setInterval(createParticles, 60000);
 
-        function saveResult() {
-       
-            const finalResult = document.getElementById('result').textContent;
-            const overallConf = "{{ overall_conf }}";
-            const spiralResult = "{{ sp_result }}";
-            const spiralConf = "{{ sp_conf }}";
-            const waveResult = "{{ wave_result }}";
-            const waveConf = "{{ wave_conf }}";
-            const timestamp = new Date().toLocaleString();
-
-            const index = localStorage.length + 1;
-            localStorage.setItem(index, JSON.stringify({
-                result: finalResult,
-                overallConf: overallConf,
-                spiralResult: spiralResult,
-                spiralConf: spiralConf,
-                waveResult: waveResult,
-                waveConf: waveConf,
-                date: timestamp
-            }));
-            showNotification('บันทึกข้อมูลเรียบร้อยแล้ว');
-
-            updateHistoryList();
-        }
 
         function showNotification(message) {
             const notification = document.getElementById('notification');
@@ -1237,7 +1213,7 @@
                 const key = localStorage.key(i);
                 try {
                     const value = JSON.parse(localStorage.getItem(key));
-                    if (value && value.result) {  
+                    if (value && value.result) {
                         history.push(value);
                     }
                 } catch (e) {
@@ -1250,7 +1226,7 @@
                 return;
             }
 
-            historyList.innerHTML = ''; 
+            historyList.innerHTML = '';
 
             history.forEach((item, index) => {
                 const historyItem = document.createElement('div');
@@ -1298,7 +1274,6 @@ Wave: ${item.waveResult || "N/A"} (${item.waveConf || "0"}%)`);
                 }));
 
                 showNotification('บันทึกข้อมูลเรียบร้อยแล้ว');
-
                 updateHistoryList();
             } catch (error) {
                 console.error("Error saving results:", error);
@@ -1323,14 +1298,33 @@ Wave: ${item.waveResult || "N/A"} (${item.waveConf || "0"}%)`);
         }
 
         window.onload = function () {
-           
-            const resultText = document.getElementById('result').textContent;
-
             
             setTimeout(() => {
+                const resultText = document.getElementById('result').textContent;
                 animateText(document.getElementById('result'), resultText);
+                
             }, 2000);
-        };
+
+            setTimeout(() => {
+                if (localStorage.length === 0 || !Array.from(Object.keys(localStorage)).some(key => key.startsWith('result_'))) {
+                    saveResult();
+                }
+            }, 3000);
+
+            document.getElementById('spiralProgress').style.setProperty('--progress-width', '{{ sp_conf }}%');
+            document.getElementById('waveProgress').style.setProperty('--progress-width', '{{ wave_conf }}%');
+
+            setTimeout(function () {
+                document.querySelector('.loading-overlay').style.opacity = '0';
+                setTimeout(function () {
+                    document.querySelector('.loading-overlay').style.display = 'none';
+                    createConfetti();
+                }, 500);
+            }, 1000);
+
+            createParticles();
+            updateHistoryList();
+        }
     </script>
 </body>
 

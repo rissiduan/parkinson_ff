@@ -659,7 +659,7 @@
             <div class="upload-icon">
                 <i class="fas fa-cloud-upload-alt"></i>
             </div>
-            <h3>Sending Drawing...</h3>
+            <h3>กำลังส่งข้อมูล</h3>
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
@@ -747,13 +747,13 @@
             const centerX = templateCanvas.width / 2;
             const centerY = templateCanvas.height / 2;
 
-            // Draw the slightly larger starting circle with darker color
+            
             templateCtx.beginPath();
             templateCtx.arc(centerX, centerY, 8, 0, Math.PI * 2);
-            templateCtx.fillStyle = '#888888'; // Darker color for the center point
+            templateCtx.fillStyle = '#888888'; 
             templateCtx.fill();
 
-            // Draw the spiral with arrow
+           
             templateCtx.beginPath();
             templateCtx.strokeStyle = '#cccccc';
             templateCtx.lineWidth = 2;
@@ -776,14 +776,14 @@
                 templateCtx.lineTo(x, y);
             }
 
-            // Save the end point
+         
             const endX = centerX + radius * Math.cos(angle);
             const endY = centerY + radius * Math.sin(angle);
 
-            // Draw the spiral
+           
             templateCtx.stroke();
 
-            // Compute the true tangent vector from spiral derivative
+           
             const r = radius;
             const dr_dtheta = radiusIncrement;
 

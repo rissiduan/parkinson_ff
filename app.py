@@ -228,7 +228,8 @@ def final_spiral():
         print(f"✅ [SPIRAL] Prediction result: {result} (Confidence: {confidence*100:.2f}%)")
 
         session['sp_result'] = (result, confidence)
-        return jsonify({'status': 'success', 'result': result, 'confidence': float(confidence),'predicted_class': predicted_class})
+        return jsonify({'status': 'success', 'result': result, 'confidence': float(confidence), 'predicted_class': int(predicted_class)})
+
     except Exception as e:
         print(f"❌ [SPIRAL] Error occurred: {str(e)}")
         return jsonify({'status': 'error', 'message': str(e)})
@@ -265,7 +266,8 @@ def final_wave():
         print(f"✅ [WAVE] Prediction result: {result} (Confidence: {confidence*100:.2f}%)")
 
         session['wave_result'] = (result, confidence)
-        return jsonify({'status': 'success', 'result': result, 'confidence': float(confidence),'predicted_class': predicted_class})
+        return jsonify({'status': 'success', 'result': result, 'confidence': float(confidence), 'predicted_class': int(predicted_class)})
+
     except Exception as e:
         print(f"❌ [WAVE] Error occurred: {str(e)}")
         return jsonify({'status': 'error', 'message': str(e)})
