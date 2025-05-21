@@ -275,15 +275,15 @@ def final_wave():
 
 @app.route('/results', methods=['GET'])
 def get_results():
-    # ดึงผลลัพธ์จาก session (บันทึกจากการทำนายก่อนหน้า)
+   
     sp_result, sp_prob = session.get('sp_result', ('No result', 0.0))
     wave_result, wave_prob = session.get('wave_result', ('No result', 0.0))
 
-    # สร้างตัวแปรรับ predicted_class ของ Spiral และ Wave
+    
     predicted_class_sp = 1 if sp_result == "Parkinson" else 0
     predicted_class_wave = 1 if wave_result == "Parkinson" else 0
 
-    # กำหนด accuracy ของแต่ละโมเดล (น้ำหนัก)
+  
     acc_sp = 0.9564
     acc_wave = 0.9429
 
@@ -291,30 +291,27 @@ def get_results():
     weight_sp = acc_sp / total_acc
     weight_wave = acc_wave / total_acc
 
-    # แปลง prob ของแต่ละโมเดล ให้เป็นความมั่นใจในผลลัพธ์ที่โมเดลเลือก
+    
     sp_conf_final = sp_prob if sp_result == "Parkinson" else 1 - sp_prob
     wave_conf_final = wave_prob if wave_result == "Parkinson" else 1 - wave_prob
-
-    # คำนวณ weighted confidence โดยรวม (ใช้สำหรับแสดงความมั่นใจในผลลัพธ์ที่แต่ละโมเดลเลือก)
+  
     weighted_confidence = (weight_sp * sp_conf_final) + (weight_wave * wave_conf_final)
 
-    # คำนวณ weighted probability ของ Parkinson (ความน่าจะเป็นที่เป็น Parkinson)
+   
     sp_parkinson_prob = sp_prob if sp_result == "Parkinson" else 1 - sp_prob
     wave_parkinson_prob = wave_prob if wave_result == "Parkinson" else 1 - wave_prob
 
     weighted_parkinson_prob = (weight_sp * sp_parkinson_prob) + (weight_wave * wave_parkinson_prob)
 
-    # กำหนด threshold เพื่อแยก Parkinson หรือ Healthy
     threshold = 0.5
     final_result = "Parkinson" if weighted_parkinson_prob >= threshold else "Healthy"
 
-    # แก้ไขการคำนวณ overall confidence ให้สอดคล้องกับผลลัพธ์ final_result
     if final_result == "Parkinson":
         overall_conf = weighted_parkinson_prob
     else:
         overall_conf = 1 - weighted_parkinson_prob
 
-    # Debug print
+    
     print("Spiral model: result =", sp_result, ", raw prob =", sp_prob, ", confidence final =", sp_conf_final)
     print("Wave model: result =", wave_result, ", raw prob =", wave_prob, ", confidence final =", wave_conf_final)
     print(f"Weighted confidence (final result): {weighted_confidence:.4f}")
@@ -323,10 +320,10 @@ def get_results():
     print("predicted_class_sp: ", predicted_class_sp)
     print("predicted_class_wave: ", predicted_class_wave)
 
-    # ส่งผลลัพธ์ไปยังหน้าเว็บ พร้อมแสดงความมั่นใจในผลลัพธ์สุดท้าย
+    
     return render_template("result.html",
         final_result=final_result,
-        overall_conf=round(overall_conf * 100, 2),  # แสดงความมั่นใจใน final result แบบถูกต้อง
+        overall_conf=round(overall_conf * 100, 2),  
         sp_result=sp_result,
         sp_conf=round(sp_prob * 100, 2),
         wave_result=wave_result,
@@ -338,8 +335,5 @@ def get_results():
     )
 
 
-
-
-# ---------- Run ----------
 if __name__ == "__main__":
     app.run(debug=True)
